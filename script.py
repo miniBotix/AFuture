@@ -26,7 +26,7 @@ response = ses.post(url, headers=headers, json=base_payload)
 data = response.json()
 
 total_pages = data['pagination']['total_pages']
-print("Total Pages:", total_pages)
+#print("Total Pages:", total_pages)
 all_records = []
 
 for page in range(1, total_pages + 1):
@@ -42,7 +42,7 @@ for page in range(1, total_pages + 1):
     page_data = res.json()
     records = page_data['data']['records']
 
-    print(f"Fetched Page {page} → {len(records)} records")
+    #print(f"Fetched Page {page} → {len(records)} records")
 
     for item in records:
         cleaned = {
@@ -58,5 +58,5 @@ for page in range(1, total_pages + 1):
 with open("prices.json", "w") as f:
     json.dump(all_records, f, indent=2)
 
-print("Final data saved: prices.json")
-print("Total records:", len(all_records))
+# print("Final data saved: prices.json")
+# print("Total records:", len(all_records))
