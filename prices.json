@@ -1,1 +1,187 @@
 
+[
+  {
+    "crop": "Bajra(Pearl Millet/Cumbu)",
+    "group": "Cereals",
+    "price": 1943.9,
+    "arrival": 1382.42,
+    "date": "23-04-2026",
+    "trend": "down"
+  },
+  {
+    "crop": "Barley(Jau)",
+    "group": "Cereals",
+    "price": 2073.02,
+    "arrival": 4404.82,
+    "date": "23-04-2026",
+    "trend": "down"
+  },
+  {
+    "crop": "Jowar(Sorghum)",
+    "group": "Cereals",
+    "price": 4233.28,
+    "arrival": 238.41,
+    "date": "23-04-2026",
+    "trend": "up"
+  },
+  {
+    "crop": "Maize",
+    "group": "Cereals",
+    "price": 1756.85,
+    "arrival": 25324.77,
+    "date": "23-04-2026",
+    "trend": "down"
+  },
+  {
+    "crop": "Paddy(Common)",
+    "group": "Cereals",
+    "price": 2492.1,
+    "arrival": 18897.22,
+    "date": "23-04-2026",
+    "trend": "up"
+  },
+  {
+    "crop": "Ragi(Finger Millet)",
+    "group": "Cereals",
+    "price": 3347.94,
+    "arrival": 119.2,
+    "date": "23-04-2026",
+    "trend": "down"
+  },
+  {
+    "crop": "Wheat",
+    "group": "Cereals",
+    "price": 2561.77,
+    "arrival": 481373.15,
+    "date": "23-04-2026",
+    "trend": "down"
+  },
+  {
+    "crop": "Cotton",
+    "group": "Fibre Crops",
+    "price": 8328.47,
+    "arrival": 1499.19,
+    "date": "23-04-2026",
+    "trend": "up"
+  },
+  {
+    "crop": "Copra",
+    "group": "Oil Seeds",
+    "price": 18281.22,
+    "arrival": 45.12,
+    "date": "23-04-2026",
+    "trend": "up"
+  },
+  {
+    "crop": "Groundnut",
+    "group": "Oil Seeds",
+    "price": 6422.98,
+    "arrival": 1367.6,
+    "date": "23-04-2026",
+    "trend": "down"
+  },
+  {
+    "crop": "Mustard",
+    "group": "Oil Seeds",
+    "price": 6352.46,
+    "arrival": 11876.88,
+    "date": "23-04-2026",
+    "trend": "up"
+  },
+  {
+    "crop": "Safflower",
+    "group": "Oil Seeds",
+    "price": 5335.81,
+    "arrival": 11.8,
+    "date": "23-04-2026",
+    "trend": "down"
+  },
+  {
+    "crop": "Sesamum(Sesame,Gingelly,Til)",
+    "group": "Oil Seeds",
+    "price": 11282.07,
+    "arrival": 92.15,
+    "date": "23-04-2026",
+    "trend": "up"
+  },
+  {
+    "crop": "Soyabean",
+    "group": "Oil Seeds",
+    "price": 5692.96,
+    "arrival": 7846.14,
+    "date": "23-04-2026",
+    "trend": "up"
+  },
+  {
+    "crop": "Sunflower/Sunflower Seed",
+    "group": "Oil Seeds",
+    "price": 6319.04,
+    "arrival": 818.9,
+    "date": "23-04-2026",
+    "trend": "down"
+  },
+  {
+    "crop": "Arhar(Tur/Red Gram)(Whole)",
+    "group": "Pulses",
+    "price": 7380.09,
+    "arrival": 1794.4,
+    "date": "23-04-2026",
+    "trend": "down"
+  },
+  {
+    "crop": "Bengal Gram(Gram)(Whole)",
+    "group": "Pulses",
+    "price": 5309.88,
+    "arrival": 9608.18,
+    "date": "23-04-2026",
+    "trend": "down"
+  },
+  {
+    "crop": "Black Gram(Urd Beans)(Whole)",
+    "group": "Pulses",
+    "price": 7638.09,
+    "arrival": 157.79,
+    "date": "23-04-2026",
+    "trend": "down"
+  },
+  {
+    "crop": "Green Gram(Moong)(Whole)",
+    "group": "Pulses",
+    "price": 7905.31,
+    "arrival": 270.73,
+    "date": "23-04-2026",
+    "trend": "down"
+  },
+  {
+    "crop": "Lentil(Masur)(Whole)",
+    "group": "Pulses",
+    "price": 7200.21,
+    "arrival": 2415.43,
+    "date": "23-04-2026",
+    "trend": "up"
+  },
+  {
+    "crop": "Onion",
+    "group": "Vegetables",
+    "price": 1092.18,
+    "arrival": 12851.76,
+    "date": "23-04-2026",
+    "trend": null
+  },
+  {
+    "crop": "Potato",
+    "group": "Vegetables",
+    "price": 514.42,
+    "arrival": 38453.2,
+    "date": "23-04-2026",
+    "trend": null
+  },
+  {
+    "crop": "Tomato",
+    "group": "Vegetables",
+    "price": 2008.24,
+    "arrival": 4482.88,
+    "date": "23-04-2026",
+    "trend": null
+  }
+]
