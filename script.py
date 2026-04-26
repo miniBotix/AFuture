@@ -9,10 +9,10 @@ headers = {
     "accept": "application/json, text/plain, */*",
     "content-type": "application/json",
 }
-
+date = '2026-04-26'
 base_payload = {
     'dashboard': 'marketwise_price_arrival',
-    'date': '2026-04-25',
+    'date': date,
     'group': [100000],
     'commodity': [100001],
     'variety': 100021,
