@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crop Price Live</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f5f7fa;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+select {
+  padding: 10px;
+  margin-bottom: 15px;
+  width: 100%;
+  font-size: 16px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+th {
+  background: #2c7be5;
+  color: white;
+}
+
+tr:hover {
+  background: #f1f1f1;
+}
+
+.up {
+  color: green;
+  font-weight: bold;
+}
+
+.down {
+  color: red;
+  font-weight: bold;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+  <h1>🌾 Live Crop Prices</h1>
+
+  <select id="cropSelect">
+    <option value="">All Crops</option>
+  </select>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Crop</th>
+        <th>Price (₹)</th>
+        <th>Arrival</th>
+        <th>Trend</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<script>
+const DATA_URL = "https://raw.githubusercontent.com/miniBotix/AFuture/main/prices.json";
+
+let allData = [];
+
+// Load data
+fetch(DATA_URL)
+  .then(res => res.json())
+  .then(data => {
+    allData = data;
+    displayTable(data);
+    loadDropdown(data);
+  })
+  .catch(err => {
+    console.error("Error loading data:", err);
+  });
+
+// Display table
+function displayTable(data) {
+  const table = document.getElementById("tableBody");
+  table.innerHTML = "";
+
+  data.forEach(item => {
+    let trendClass = "";
+    let trendSymbol = "-";
+
+    if (item.trend === "up") {
+      trendClass = "up";
+      trendSymbol = "▲";
+    } else if (item.trend === "down") {
+      trendClass = "down";
+      trendSymbol = "▼";
+    }
+
+    table.innerHTML += `
+      <tr>
+        <td>${item.crop}</td>
+        <td>${item.price}</td>
+        <td>${item.arrival}</td>
+        <td class="${trendClass}">${trendSymbol}</td>
+      </tr>
+    `;
+  });
+}
+
+// Load dropdown
+function loadDropdown(data) {
+  const crops = [...new Set(data.map(d => d.crop))];
+  const select = document.getElementById("cropSelect");
+
+  crops.forEach(crop => {
+    select.innerHTML += `<option value="${crop}">${crop}</option>`;
+  });
+
+  select.onchange = () => {
+    const selected = select.value;
+
+    if (!selected) {
+      displayTable(allData);
+    } else {
+      const filtered = allData.filter(d => d.crop === selected);
+      displayTable(filtered);
+    }
+  };
+}
+</script>
+
+</body>
+</html>
