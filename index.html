@@ -1,156 +1,1012 @@
 <!DOCTYPE html>
-
-<html lang="en">
+<html lang="ta-IN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Crop Price Live</title>
-
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>உழவர் நம்பன் | Ulavarnanban — Live Agri Market Data</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Space+Mono:wght@400;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-body {
-  font-family: Arial;
-  background: #f5f7fa;
-  margin: 0;
-  padding: 20px;
+/* ─── TOKENS ─────────────────────────────────────────────────────────────── */
+:root{
+  --bg:      #080c10;
+  --bg2:     #0d1219;
+  --bg3:     #111820;
+  --border:  rgba(255,255,255,.07);
+  --gold:    #c9a84c;
+  --gold2:   #f0d080;
+  --green:   #2ecb71;
+  --red:     #f04e5e;
+  --muted:   #4a5568;
+  --text:    #e8edf5;
+  --sub:     #8898aa;
+  --glow:    rgba(201,168,76,.18);
+  --mono:    'Space Mono',monospace;
+  --serif:   'Playfair Display',serif;
+  --tamil:   'Noto Sans Tamil',sans-serif;
 }
 
-h1 {
-  text-align: center;
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--mono);
+  overflow-x:hidden;
+  min-height:100vh;
 }
 
-.container {
-  max-width: 1000px;
-  margin: auto;
+/* ─── NOISE GRAIN ────────────────────────────────────────────────────────── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:999;opacity:.4;
 }
 
-select {
-  padding: 10px;
-  margin-bottom: 15px;
-  width: 100%;
-  font-size: 16px;
+/* ─── TICKER ─────────────────────────────────────────────────────────────── */
+.ticker-wrap{
+  background:var(--gold);overflow:hidden;
+  height:32px;display:flex;align-items:center;
+  position:sticky;top:0;z-index:100;
+}
+.ticker-label{
+  background:#000;color:var(--gold);
+  padding:0 14px;font-size:11px;font-weight:700;
+  letter-spacing:.1em;white-space:nowrap;height:100%;
+  display:flex;align-items:center;flex-shrink:0;
+}
+.ticker-track{
+  display:flex;animation:scroll-left 60s linear infinite;
+  white-space:nowrap;
+}
+.ticker-track span{
+  color:#000;font-size:11px;font-weight:700;padding:0 32px;
+  letter-spacing:.04em;
+}
+@keyframes scroll-left{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ─── HEADER ─────────────────────────────────────────────────────────────── */
+header{
+  padding:36px 48px 28px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:flex-end;justify-content:space-between;
+  background:linear-gradient(180deg,rgba(201,168,76,.06) 0%,transparent 100%);
+  position:relative;overflow:hidden;
+}
+header::after{
+  content:'';position:absolute;
+  top:-60px;right:-60px;
+  width:320px;height:320px;
+  background:radial-gradient(circle,rgba(201,168,76,.12) 0%,transparent 70%);
+  pointer-events:none;
+}
+.brand-mark{
+  display:flex;align-items:center;gap:16px;
+}
+.brand-icon{
+  width:52px;height:52px;
+  border:2px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-size:24px;position:relative;
+}
+.brand-icon::before{
+  content:'';position:absolute;inset:-6px;
+  border:1px solid rgba(201,168,76,.3);
+}
+.brand-title{
+  display:flex;flex-direction:column;gap:2px;
+}
+.brand-title h1{
+  font-family:var(--serif);font-size:28px;
+  color:var(--gold2);letter-spacing:-.01em;line-height:1;
+}
+.brand-title .sub{
+  font-family:var(--tamil);font-size:13px;
+  color:var(--gold);letter-spacing:.08em;opacity:.85;
+}
+.header-meta{
+  text-align:right;display:flex;flex-direction:column;gap:6px;
+}
+.live-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(46,203,113,.1);border:1px solid rgba(46,203,113,.3);
+  padding:5px 12px;font-size:11px;letter-spacing:.08em;
+  color:var(--green);align-self:flex-end;
+}
+.live-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:var(--green);
+  animation:pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.update-time{font-size:11px;color:var(--sub);}
+.proverb-strip{
+  font-family:var(--tamil);font-size:12px;
+  color:var(--gold);opacity:.7;margin-top:2px;
+  font-style:italic;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
+/* ─── STATS ROW ──────────────────────────────────────────────────────────── */
+.stats-row{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-bottom:1px solid var(--border);
+}
+.stat-card{
+  padding:24px 32px;
+  border-right:1px solid var(--border);
+  position:relative;overflow:hidden;
+  transition:background .3s;
+}
+.stat-card:last-child{border-right:none}
+.stat-card:hover{background:rgba(255,255,255,.02)}
+.stat-card::before{
+  content:'';position:absolute;
+  top:0;left:0;right:0;height:2px;
+  background:var(--gold);opacity:0;
+  transition:opacity .3s;
+}
+.stat-card:hover::before{opacity:1}
+.stat-label{font-size:10px;letter-spacing:.12em;color:var(--sub);margin-bottom:10px;text-transform:uppercase;}
+.stat-val{
+  font-family:var(--serif);font-size:32px;
+  color:var(--gold2);line-height:1;
+}
+.stat-sub{font-size:11px;color:var(--sub);margin-top:6px;}
+
+/* ─── MAIN GRID ──────────────────────────────────────────────────────────── */
+.main{display:grid;grid-template-columns:1fr 340px;min-height:calc(100vh - 220px);}
+.content-col{border-right:1px solid var(--border);}
+.side-col{}
+
+/* ─── SECTION HEADERS ────────────────────────────────────────────────────── */
+.sec-head{
+  padding:20px 32px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--bg2);
+}
+.sec-title{
+  font-size:11px;letter-spacing:.14em;color:var(--gold);
+  text-transform:uppercase;
+}
+.sec-actions{display:flex;gap:8px;}
+.chip{
+  padding:4px 12px;border:1px solid var(--border);
+  font-size:10px;letter-spacing:.06em;cursor:pointer;
+  background:transparent;color:var(--sub);
+  transition:all .2s;
+}
+.chip:hover,.chip.active{
+  border-color:var(--gold);color:var(--gold2);
+  background:rgba(201,168,76,.08);
 }
 
-th, td {
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
-  text-align: center;
+/* ─── FILTERS ────────────────────────────────────────────────────────────── */
+.filter-bar{
+  padding:16px 32px;
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  border-bottom:1px solid var(--border);
+  background:var(--bg3);
+}
+.search-box{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg2);border:1px solid var(--border);
+  padding:8px 14px;flex:1;min-width:200px;
+  transition:border-color .2s;
+}
+.search-box:focus-within{border-color:var(--gold);}
+.search-box input{
+  background:none;border:none;color:var(--text);
+  font-family:var(--mono);font-size:12px;
+  outline:none;width:100%;
+}
+.search-box input::placeholder{color:var(--muted);}
+.search-icon{color:var(--muted);font-size:13px;}
+.filter-chip{
+  padding:7px 14px;border:1px solid var(--border);
+  font-size:11px;cursor:pointer;
+  background:transparent;color:var(--sub);
+  transition:all .2s;letter-spacing:.04em;
+}
+.filter-chip:hover,.filter-chip.active{
+  border-color:var(--gold);color:var(--gold2);
+  background:rgba(201,168,76,.1);
 }
 
-th {
-  background: #2c7be5;
-  color: white;
+/* ─── PRICE TABLE ────────────────────────────────────────────────────────── */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead th{
+  padding:12px 20px;font-size:10px;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--sub);text-align:left;
+  border-bottom:1px solid var(--border);
+  background:var(--bg2);position:sticky;top:0;z-index:2;
+}
+tbody tr{
+  border-bottom:1px solid rgba(255,255,255,.04);
+  transition:background .15s;
+  animation:rowIn .4s ease both;
+}
+tbody tr:hover{background:rgba(201,168,76,.05);}
+@keyframes rowIn{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+td{padding:14px 20px;font-size:12px;vertical-align:middle;}
+.crop-name{font-weight:700;color:var(--text);font-size:13px;}
+.group-badge{
+  display:inline-block;padding:2px 8px;
+  font-size:9px;letter-spacing:.08em;
+  background:rgba(201,168,76,.12);
+  color:var(--gold);margin-top:3px;
+}
+.price-val{
+  font-family:var(--serif);font-size:18px;
+  color:var(--gold2);
+}
+.price-unit{font-size:10px;color:var(--sub);margin-left:2px;}
+.arrival-val{color:var(--sub);font-size:12px;}
+.trend-up{color:var(--green);display:flex;align-items:center;gap:4px;font-size:12px;}
+.trend-dn{color:var(--red);display:flex;align-items:center;gap:4px;font-size:12px;}
+.trend-na{color:var(--muted);}
+.bar-mini{
+  height:3px;background:var(--border);
+  margin-top:6px;position:relative;
+}
+.bar-mini-fill{
+  height:100%;background:var(--gold);
+  transition:width 1s ease;
 }
 
-tr:hover {
-  background: #f1f1f1;
+/* ─── CHART SECTION ──────────────────────────────────────────────────────── */
+.chart-wrap{
+  padding:24px 32px;
+  border-bottom:1px solid var(--border);
+}
+.chart-container{position:relative;height:260px;margin-top:16px;}
+
+/* ─── SIDEBAR ────────────────────────────────────────────────────────────── */
+/* ─── INDIA MAP ──────────────────────────────────────────────────────────── */
+.map-section{padding:20px;}
+.map-title{font-size:10px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase;margin-bottom:14px;}
+.india-map-wrap{
+  position:relative;
+  background:var(--bg3);
+  border:1px solid var(--border);
+  padding:10px;
+}
+#india-svg{width:100%;height:auto;display:block;}
+.map-dot{
+  cursor:pointer;
+  transition:all .2s;
+}
+.map-dot:hover{filter:brightness(1.5);}
+.map-tooltip{
+  position:fixed;
+  background:var(--bg2);border:1px solid var(--gold);
+  padding:8px 12px;font-size:11px;
+  pointer-events:none;z-index:500;
+  display:none;min-width:140px;
+}
+.map-tooltip-name{color:var(--gold2);font-weight:700;margin-bottom:2px;}
+.map-tooltip-info{color:var(--sub);}
+.map-legend{
+  display:flex;align-items:center;gap:8px;
+  margin-top:10px;font-size:10px;color:var(--sub);
+}
+.legend-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--red);
+  box-shadow:0 0 6px var(--red);
 }
 
-.up {
-  color: green;
-  font-weight: bold;
+/* ─── TOP CROPS SIDEBAR ──────────────────────────────────────────────────── */
+.side-crops{padding:0 20px 20px;}
+.crop-rank{
+  padding:12px 0;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;
+  transition:padding-left .2s;
+}
+.crop-rank:hover{padding-left:6px;}
+.rank-num{
+  font-family:var(--serif);font-size:22px;
+  color:var(--border);width:28px;flex-shrink:0;text-align:center;
+}
+.rank-info{flex:1;}
+.rank-name{font-size:12px;color:var(--text);}
+.rank-price{
+  font-family:var(--serif);font-size:16px;
+  color:var(--gold2);
+}
+.rank-bar{height:2px;background:var(--border);margin-top:4px;position:relative;}
+.rank-bar-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--gold),var(--gold2));
+  transition:width 1.2s ease;
 }
 
-.down {
-  color: red;
-  font-weight: bold;
+/* ─── PROVERB BANNER ─────────────────────────────────────────────────────── */
+.proverb-box{
+  margin:20px;padding:16px;
+  border:1px solid rgba(201,168,76,.3);
+  background:rgba(201,168,76,.04);
+  position:relative;
+}
+.proverb-box::before{
+  content:'"';position:absolute;
+  top:-14px;left:14px;
+  font-family:var(--serif);font-size:48px;
+  color:var(--gold);opacity:.3;line-height:1;
+}
+.proverb-ta{
+  font-family:var(--tamil);font-size:14px;
+  color:var(--gold2);line-height:1.6;
+}
+.proverb-en{
+  font-size:11px;color:var(--sub);
+  margin-top:6px;font-style:italic;
+}
+
+/* ─── LOADING ────────────────────────────────────────────────────────────── */
+.loading-screen{
+  position:fixed;inset:0;
+  background:var(--bg);z-index:900;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:24px;
+}
+.loader-logo{
+  font-family:var(--serif);font-size:42px;
+  color:var(--gold);opacity:0;
+  animation:fadeUp .8s ease .2s both;
+}
+.loader-sub{
+  font-family:var(--tamil);font-size:14px;
+  color:var(--sub);opacity:0;
+  animation:fadeUp .8s ease .5s both;
+}
+.loader-bar-wrap{
+  width:220px;height:2px;background:var(--border);
+  overflow:hidden;opacity:0;
+  animation:fadeUp .5s ease .7s both;
+}
+.loader-bar{
+  height:100%;background:var(--gold);
+  animation:loadBar 2s ease .8s both;
+}
+@keyframes loadBar{from{width:0}to{width:100%}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hidden{display:none!important}
+
+/* ─── ERROR ──────────────────────────────────────────────────────────────── */
+.error-box{
+  margin:40px auto;max-width:500px;
+  background:rgba(240,78,94,.06);
+  border:1px solid rgba(240,78,94,.3);
+  padding:28px;text-align:center;
+}
+.error-box h3{color:var(--red);margin-bottom:10px;font-family:var(--serif);}
+.error-box p{font-size:12px;color:var(--sub);}
+
+/* ─── FOOTER ─────────────────────────────────────────────────────────────── */
+footer{
+  padding:24px 48px;
+  border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--bg2);
+}
+.footer-brand{font-family:var(--tamil);font-size:13px;color:var(--gold);opacity:.8;}
+.footer-info{font-size:10px;color:var(--muted);letter-spacing:.06em;}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media(max-width:1100px){
+  .main{grid-template-columns:1fr;}
+  .side-col{border-top:1px solid var(--border);}
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:640px){
+  header{padding:20px;flex-direction:column;align-items:flex-start;gap:12px;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .filter-bar{padding:12px 16px;}
 }
 </style>
-
 </head>
 <body>
 
-<div class="container">
-  <h1>🌾 Live Crop Prices</h1>
-
-  <select id="cropSelect">
-    <option value="">All Crops</option>
-  </select>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Crop</th>
-        <th>Price (₹)</th>
-        <th>Arrival</th>
-        <th>Trend</th>
-      </tr>
-    </thead>
-    <tbody id="tableBody"></tbody>
-  </table>
+<!-- LOADING -->
+<div class="loading-screen" id="loader">
+  <div class="loader-logo">உழவர் நம்பன்</div>
+  <div class="loader-sub">Fetching live market data…</div>
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
 </div>
 
+<!-- TOOLTIP -->
+<div class="map-tooltip" id="mapTooltip">
+  <div class="map-tooltip-name" id="ttName"></div>
+  <div class="map-tooltip-info" id="ttInfo"></div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker-label">🌾 LIVE PRICES</div>
+  <div style="overflow:hidden;flex:1">
+    <div class="ticker-track" id="ticker">
+      <span id="ticker-inner">Loading…</span>
+      <span id="ticker-clone"></span>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="brand-mark">
+    <div class="brand-icon">🌾</div>
+    <div class="brand-title">
+      <h1>Ulavarnanban</h1>
+      <div class="sub">உழவர் நம்பன் · Agri Market Intelligence</div>
+    </div>
+  </div>
+  <div class="header-meta">
+    <div class="live-badge"><div class="live-dot"></div>LIVE DATA</div>
+    <div class="update-time" id="updateTime">Last update: —</div>
+    <div class="proverb-strip" id="headerProverb">Loading proverb…</div>
+  </div>
+</header>
+
+<!-- STATS ROW -->
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-label">Total Crops Tracked</div>
+    <div class="stat-val" id="s-crops">—</div>
+    <div class="stat-sub">across all groups</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Highest Price Today</div>
+    <div class="stat-val" id="s-high">—</div>
+    <div class="stat-sub" id="s-high-name">₹ per quintal</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Trending Up ↑</div>
+    <div class="stat-val" id="s-up" style="color:var(--green)">—</div>
+    <div class="stat-sub">commodities rising</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total Arrivals</div>
+    <div class="stat-val" id="s-arr">—</div>
+    <div class="stat-sub">MT today</div>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main">
+  <!-- LEFT CONTENT -->
+  <div class="content-col">
+
+    <!-- CHART -->
+    <div class="sec-head">
+      <div class="sec-title">Price Overview</div>
+      <div class="sec-actions">
+        <button class="chip active" onclick="setChartMode('bar',this)">Bar</button>
+        <button class="chip" onclick="setChartMode('line',this)">Line</button>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-container"><canvas id="priceChart"></canvas></div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="sec-head">
+      <div class="sec-title">Market Rates — All Commodities</div>
+      <div class="sec-actions">
+        <button class="chip" onclick="sortBy('price')">Sort ₹</button>
+        <button class="chip" onclick="sortBy('arrival')">Sort MT</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search crop…" oninput="applyFilters()"/>
+      </div>
+      <div id="groupFilters" style="display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Commodity</th>
+            <th>Avg Price (₹/qtl)</th>
+            <th>Arrival (MT)</th>
+            <th>Trend</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+      <div id="errorBox" class="error-box hidden">
+        <h3>Data Unavailable</h3>
+        <p>Could not decode market data. Please refresh or try again later.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="side-col">
+
+    <!-- PROVERB -->
+    <div class="proverb-box" id="proverb-box" style="margin:20px 20px 0;display:none;">
+      <div class="proverb-ta" id="proverb-ta"></div>
+      <div class="proverb-en" id="proverb-en"></div>
+    </div>
+
+    <!-- INDIA MAP -->
+    <div class="map-section">
+      <div class="map-title">🗺 Mandi Regions — India</div>
+      <div class="india-map-wrap">
+        <svg id="india-svg" viewBox="0 0 380 440" xmlns="http://www.w3.org/2000/svg">
+          <!-- Simplified India outline -->
+          <defs>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+            <radialGradient id="mapBg" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#1a2230"/>
+              <stop offset="100%" stop-color="#0d1219"/>
+            </radialGradient>
+          </defs>
+          <rect width="380" height="440" fill="url(#mapBg)"/>
+          <!-- India border approximate outline -->
+          <path d="M80,20 L110,18 L140,24 L165,18 L195,22 L230,16 L260,25 L275,40
+                   L295,55 L300,70 L288,85 L310,95 L318,115 L308,130 L320,145
+                   L325,165 L315,180 L320,200 L305,215 L295,235 L285,250
+                   L270,265 L260,285 L248,310 L238,330 L225,345 L215,360
+                   L205,375 L195,395 L188,410 L180,425 L172,410 L162,395
+                   L150,375 L140,355 L132,340 L120,325 L108,308 L98,288
+                   L88,268 L78,248 L68,228 L60,208 L55,188 L50,165
+                   L45,145 L48,125 L52,108 L60,92 L65,75 L70,58 L75,40 Z"
+                fill="none" stroke="rgba(201,168,76,0.25)" stroke-width="1.5"/>
+          <!-- State grid lines subtle -->
+          <g stroke="rgba(255,255,255,0.04)" stroke-width="0.5" fill="none">
+            <line x1="0" y1="150" x2="380" y2="150"/>
+            <line x1="0" y1="250" x2="380" y2="250"/>
+            <line x1="0" y1="350" x2="380" y2="350"/>
+            <line x1="130" y1="0" x2="130" y2="440"/>
+            <line x1="230" y1="0" x2="230" y2="440"/>
+          </g>
+          <!-- Dots will be injected here -->
+          <g id="state-dots"></g>
+        </svg>
+        <div class="map-legend">
+          <div class="legend-dot"></div>
+          Active mandi region
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP CROPS BY PRICE -->
+    <div class="sec-head">
+      <div class="sec-title">Top 8 — Highest Price</div>
+    </div>
+    <div class="side-crops" id="topCrops"></div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">உழவர் நம்பன் — Ulavarnanban</div>
+  <div class="footer-info">Data: AgMarkNet Gov API · Auto-refreshes hourly · All prices ₹/quintal</div>
+</footer>
+
 <script>
-const DATA_URL = "https://raw.githubusercontent.com/miniBotix/AFuture/main/prices.json";
+/* ═══════════════════════════════════════════════════════════════════
+   XOR-B64 DECODER  (must mirror script.py encoding exactly)
+═══════════════════════════════════════════════════════════════════ */
+const _S = "UlavarNamban_AgriData_2026_TN";
 
-let allData = [];
-
-// Load data
-fetch(DATA_URL)
-  .then(res => res.json())
-  .then(data => {
-    allData = data;
-    displayTable(data);
-    loadDropdown(data);
-  })
-  .catch(err => {
-    console.error("Error loading data:", err);
-  });
-
-// Display table
-function displayTable(data) {
-  const table = document.getElementById("tableBody");
-  table.innerHTML = "";
-
-  data.forEach(item => {
-    let trendClass = "";
-    let trendSymbol = "-";
-
-    if (item.trend === "up") {
-      trendClass = "up";
-      trendSymbol = "▲";
-    } else if (item.trend === "down") {
-      trendClass = "down";
-      trendSymbol = "▼";
-    }
-
-    table.innerHTML += `
-      <tr>
-        <td>${item.crop}</td>
-        <td>${item.price}</td>
-        <td>${item.arrival}</td>
-        <td class="${trendClass}">${trendSymbol}</td>
-      </tr>
-    `;
-  });
+function makeXorKey(dateStr, hour) {
+  return `${_S.slice(0,12)}:${dateStr}:${String(hour).padStart(2,'0')}`;
 }
 
-// Load dropdown
-function loadDropdown(data) {
-  const crops = [...new Set(data.map(d => d.crop))];
-  const select = document.getElementById("cropSelect");
+function xorDecodeB64(b64, key) {
+  const raw   = atob(b64);
+  const bytes = Uint8Array.from(raw, c => c.charCodeAt(0));
+  const kb    = new TextEncoder().encode(key);
+  const out   = new Uint8Array(bytes.length);
+  for (let i = 0; i < bytes.length; i++) out[i] = bytes[i] ^ kb[i % kb.length];
+  return new TextDecoder('utf-8').decode(out);
+}
 
-  crops.forEach(crop => {
-    select.innerHTML += `<option value="${crop}">${crop}</option>`;
-  });
+/* ═══════════════════════════════════════════════════════════════════
+   STATE → MAP POSITION (approx lon/lat → SVG x/y)
+═══════════════════════════════════════════════════════════════════ */
+const STATE_POS = {
+  "Jammu And Kashmir":{x:170,y:38},
+  "Himachal Pradesh":{x:180,y:62},
+  "Punjab":{x:155,y:75},
+  "Haryana":{x:178,y:95},
+  "Delhi":{x:188,y:108},
+  "Uttarakhand":{x:210,y:90},
+  "Uttar Pradesh":{x:238,y:130},
+  "Rajasthan":{x:138,y:145},
+  "Gujarat":{x:105,y:200},
+  "Madhya Pradesh":{x:205,y:190},
+  "Maharashtra":{x:175,y:245},
+  "Chhattisgarh":{x:260,y:230},
+  "Odisha":{x:295,y:250},
+  "Bihar":{x:290,y:165},
+  "Jharkhand":{x:290,y:210},
+  "West Bengal":{x:320,y:210},
+  "Assam":{x:350,y:155},
+  "Andhra Pradesh":{x:245,y:305},
+  "Telangana":{x:228,y:285},
+  "Karnataka":{x:190,y:330},
+  "Kerala":{x:185,y:375},
+  "Tamil Nadu":{x:220,y:365},
+  "Goa":{x:155,y:300},
+  "Sikkim":{x:322,y:155},
+  "Tripura":{x:348,y:190},
+  "Manipur":{x:365,y:178},
+  "Meghalaya":{x:342,y:172},
+  "Nagaland":{x:370,y:162},
+  "Mizoram":{x:355,y:195},
+  "Arunachal Pradesh":{x:368,y:138},
+};
 
-  select.onchange = () => {
-    const selected = select.value;
+/* ═══════════════════════════════════════════════════════════════════
+   GLOBALS
+═══════════════════════════════════════════════════════════════════ */
+let ALL_DATA     = [];
+let FILTERED     = [];
+let ACTIVE_GROUP = 'All';
+let SORT_KEY     = 'price';
+let chartInst    = null;
+let CHART_MODE   = 'bar';
 
-    if (!selected) {
-      displayTable(allData);
+/* ═══════════════════════════════════════════════════════════════════
+   FETCH + DECODE
+═══════════════════════════════════════════════════════════════════ */
+async function loadData() {
+  try {
+    const resp = await fetch(`prices.json?_=${Date.now()}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const envelope = await resp.json();
+
+    const v = envelope._v || 1;
+    let records;
+
+    if (v >= 3 && envelope.payload) {
+      // Extract date and hour from metadata
+      const tsStr   = envelope._ts || '';
+      const hour    = envelope._h ?? (new Date(tsStr).getHours());
+      const dateStr = tsStr.slice(0,10); // YYYY-MM-DD
+      const key     = makeXorKey(dateStr, hour);
+      const decoded = xorDecodeB64(envelope.payload, key);
+      records = JSON.parse(decoded);
     } else {
-      const filtered = allData.filter(d => d.crop === selected);
-      displayTable(filtered);
+      // Fallback: raw array (old format)
+      records = Array.isArray(envelope) ? envelope : [];
     }
-  };
-}
-</script>
 
+    // Show cultural metadata
+    if (envelope._proverb) {
+      document.getElementById('proverb-ta').textContent = envelope._proverb.ta || '';
+      document.getElementById('proverb-en').textContent = envelope._proverb.en || '';
+      document.getElementById('proverb-box').style.display = '';
+      document.getElementById('headerProverb').textContent = envelope._proverb.ta || '';
+    }
+
+    const d = envelope._d || envelope._ts?.slice(0,10) || 'Today';
+    document.getElementById('updateTime').textContent = `Last update: ${d}`;
+
+    return records;
+  } catch(e) {
+    console.error('Decode error:', e);
+    return null;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════════════════════════════ */
+function animateCount(el, target, isCurrency=false) {
+  const start = Date.now();
+  const dur   = 1200;
+  function step() {
+    const p = Math.min((Date.now()-start)/dur, 1);
+    const ease = 1 - Math.pow(1-p, 3);
+    const val  = target * ease;
+    el.textContent = isCurrency
+      ? '₹' + val.toLocaleString('en-IN',{maximumFractionDigits:0})
+      : val.toLocaleString('en-IN',{maximumFractionDigits:0});
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function renderStats(data) {
+  const crops  = data.length;
+  const upCnt  = data.filter(d=>d.trend==='up').length;
+  const totArr = data.reduce((s,d)=>s+d.arrival,0);
+  const highest= [...data].sort((a,b)=>b.price-a.price)[0];
+
+  animateCount(document.getElementById('s-crops'), crops);
+  document.getElementById('s-high').textContent = '₹' + (highest?.price||0).toLocaleString('en-IN',{maximumFractionDigits:0});
+  document.getElementById('s-high-name').textContent = highest?.crop || '—';
+  animateCount(document.getElementById('s-up'), upCnt);
+  document.getElementById('s-arr').textContent = totArr.toLocaleString('en-IN',{maximumFractionDigits:0});
+}
+
+function buildGroupFilters(data) {
+  const groups = ['All', ...new Set(data.map(d=>d.group).filter(Boolean))];
+  const wrap   = document.getElementById('groupFilters');
+  wrap.innerHTML = '';
+  groups.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-chip' + (g==='All'?' active':'');
+    btn.textContent = g;
+    btn.onclick = () => {
+      document.querySelectorAll('.filter-chip').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      ACTIVE_GROUP = g;
+      applyFilters();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  FILTERED = ALL_DATA.filter(d => {
+    const groupOk = ACTIVE_GROUP==='All' || d.group===ACTIVE_GROUP;
+    const searchOk= !q || (d.crop||'').toLowerCase().includes(q);
+    return groupOk && searchOk;
+  });
+  if (SORT_KEY==='price') FILTERED.sort((a,b)=>b.price-a.price);
+  else FILTERED.sort((a,b)=>b.arrival-a.arrival);
+  renderTable(FILTERED);
+  renderChart(FILTERED.slice(0,12));
+}
+
+function renderTable(data) {
+  const tbody = document.getElementById('tableBody');
+  const maxPrice = Math.max(...data.map(d=>d.price),1);
+  tbody.innerHTML = data.map((d,i) => {
+    const trendHTML = d.trend==='up'
+      ? `<span class="trend-up">▲ Rising</span>`
+      : d.trend==='down'
+      ? `<span class="trend-dn">▼ Falling</span>`
+      : `<span class="trend-na">— Stable</span>`;
+    const pct = ((d.price/maxPrice)*100).toFixed(1);
+    return `
+    <tr style="animation-delay:${i*0.03}s">
+      <td>
+        <div class="crop-name">${d.crop||'—'}</div>
+        <div class="group-badge">${d.group||''}</div>
+      </td>
+      <td>
+        <div class="price-val">₹${d.price.toLocaleString('en-IN',{maximumFractionDigits:0})}<span class="price-unit">/qtl</span></div>
+        <div class="bar-mini"><div class="bar-mini-fill" style="width:${pct}%"></div></div>
+      </td>
+      <td class="arrival-val">${d.arrival.toLocaleString('en-IN',{maximumFractionDigits:0})} MT</td>
+      <td>${trendHTML}</td>
+      <td style="color:var(--sub);font-size:11px">${d.date||'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function sortBy(key) {
+  SORT_KEY = key;
+  document.querySelectorAll('.sec-actions .chip').forEach(c=>c.classList.remove('active'));
+  applyFilters();
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CHART
+═══════════════════════════════════════════════════════════════════ */
+function renderChart(data) {
+  const ctx = document.getElementById('priceChart').getContext('2d');
+  const labels = data.map(d => (d.crop||'').split('(')[0].trim().slice(0,14));
+  const prices  = data.map(d => d.price);
+  const colors  = data.map(d =>
+    d.trend==='up' ? 'rgba(46,203,113,0.7)' :
+    d.trend==='down' ? 'rgba(240,78,94,0.7)' :
+    'rgba(201,168,76,0.7)'
+  );
+  const borderColors = colors.map(c=>c.replace('0.7','1'));
+
+  if (chartInst) chartInst.destroy();
+  chartInst = new Chart(ctx, {
+    type: CHART_MODE==='line' ? 'line' : 'bar',
+    data: {
+      labels,
+      datasets:[{
+        label:'Price ₹/qtl',
+        data: prices,
+        backgroundColor: CHART_MODE==='line' ? 'rgba(201,168,76,0.15)' : colors,
+        borderColor: CHART_MODE==='line' ? 'rgba(201,168,76,0.9)' : borderColors,
+        borderWidth: 2,
+        borderRadius: CHART_MODE==='bar' ? 4 : 0,
+        tension: 0.4,
+        fill: CHART_MODE==='line',
+        pointBackgroundColor: '#c9a84c',
+        pointRadius: 4,
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      animation:{duration:800,easing:'easeInOutQuart'},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#0d1219',
+          borderColor:'rgba(201,168,76,0.4)',
+          borderWidth:1,
+          titleColor:'#c9a84c',
+          bodyColor:'#e8edf5',
+          callbacks:{
+            label: ctx => ` ₹ ${ctx.raw.toLocaleString('en-IN',{maximumFractionDigits:0})} / quintal`
+          }
+        }
+      },
+      scales:{
+        x:{
+          ticks:{color:'#4a5568',font:{family:"'Space Mono'",size:10},maxRotation:35},
+          grid:{color:'rgba(255,255,255,0.04)'},
+        },
+        y:{
+          ticks:{
+            color:'#4a5568',font:{family:"'Space Mono'",size:10},
+            callback: v => '₹'+v.toLocaleString('en-IN')
+          },
+          grid:{color:'rgba(255,255,255,0.06)'},
+        }
+      }
+    }
+  });
+}
+
+function setChartMode(mode, btn) {
+  CHART_MODE = mode;
+  document.querySelectorAll('.sec-actions .chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  renderChart((FILTERED.length?FILTERED:ALL_DATA).slice(0,12));
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   INDIA MAP DOTS
+═══════════════════════════════════════════════════════════════════ */
+function renderMap(data) {
+  // Group data by state
+  const stateMap = {};
+  data.forEach(d => {
+    const st = d.state;
+    if (!st) return;
+    if (!stateMap[st]) stateMap[st] = {count:0,crops:[],totalPrice:0};
+    stateMap[st].count++;
+    stateMap[st].crops.push(d.crop);
+    stateMap[st].totalPrice += d.price;
+  });
+
+  // If no state data, show Tamil Nadu as fallback
+  const hasStates = Object.keys(stateMap).length > 0;
+  if (!hasStates) {
+    stateMap['Tamil Nadu'] = {count:data.length,crops:data.map(d=>d.crop),totalPrice:data.reduce((s,d)=>s+d.price,0)};
+  }
+
+  const dotsEl = document.getElementById('state-dots');
+  dotsEl.innerHTML = '';
+  const tooltip = document.getElementById('mapTooltip');
+
+  Object.entries(stateMap).forEach(([state, info]) => {
+    const pos = STATE_POS[state];
+    if (!pos) return;
+
+    const g   = document.createElementNS('http://www.w3.org/2000/svg','g');
+    // Glow ring
+    const ring = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    ring.setAttribute('cx',pos.x); ring.setAttribute('cy',pos.y);
+    ring.setAttribute('r','8');
+    ring.setAttribute('fill','rgba(240,78,94,0.15)');
+    ring.setAttribute('stroke','rgba(240,78,94,0.4)');
+    ring.setAttribute('stroke-width','1');
+    // Dot
+    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx',pos.x); dot.setAttribute('cy',pos.y);
+    dot.setAttribute('r','4');
+    dot.setAttribute('fill','#f04e5e');
+    dot.setAttribute('filter','url(#glow)');
+    dot.setAttribute('class','map-dot');
+
+    // Pulse animation
+    ring.innerHTML = `<animate attributeName="r" values="6;10;6" dur="2s" repeatCount="indefinite"/>
+                      <animate attributeName="opacity" values="0.6;0.1;0.6" dur="2s" repeatCount="indefinite"/>`;
+
+    g.appendChild(ring);
+    g.appendChild(dot);
+    g.style.cursor = 'pointer';
+
+    g.addEventListener('mousemove', e => {
+      const avgP = (info.totalPrice/info.count).toFixed(0);
+      document.getElementById('ttName').textContent = state;
+      document.getElementById('ttInfo').innerHTML = `${info.count} crop(s) · Avg ₹${parseInt(avgP).toLocaleString('en-IN')}`;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (e.clientX+14)+'px';
+      tooltip.style.top  = (e.clientY-10)+'px';
+    });
+    g.addEventListener('mouseleave', () => { tooltip.style.display='none'; });
+    g.addEventListener('click', () => {
+      // Filter table by state
+      FILTERED = ALL_DATA.filter(d=>d.state===state||(state==='Tamil Nadu'&&!d.state));
+      renderTable(FILTERED);
+    });
+
+    dotsEl.appendChild(g);
+  });
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TOP CROPS SIDEBAR
+═══════════════════════════════════════════════════════════════════ */
+function renderTopCrops(data) {
+  const top = [...data].sort((a,b)=>b.price-a.price).slice(0,8);
+  const max = top[0]?.price || 1;
+  document.getElementById('topCrops').innerHTML = top.map((d,i)=>`
+    <div class="crop-rank">
+      <div class="rank-num">${i+1}</div>
+      <div class="rank-info">
+        <div class="rank-name">${(d.crop||'').split('(')[0].trim()}</div>
+        <div class="rank-price">₹${d.price.toLocaleString('en-IN',{maximumFractionDigits:0})}</div>
+        <div class="rank-bar"><div class="rank-bar-fill" style="width:${(d.price/max*100).toFixed(1)}%"></div></div>
+      </div>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   TICKER TAPE
+═══════════════════════════════════════════════════════════════════ */
+function buildTicker(data) {
+  const items = data.map(d => {
+    const sym = d.trend==='up'?'▲':d.trend==='down'?'▼':'—';
+    const col = d.trend==='up'?'#2ecb71':d.trend==='down'?'#f04e5e':'#888';
+    return `<span>${(d.crop||'').split('(')[0].trim()}&nbsp;<span style="color:${col}">${sym}</span>&nbsp;₹${d.price.toLocaleString('en-IN',{maximumFractionDigits:0})}</span>`;
+  }).join('');
+  const inner = document.getElementById('ticker-inner');
+  const clone = document.getElementById('ticker-clone');
+  inner.innerHTML = items;
+  clone.innerHTML  = items; // duplicate for seamless loop
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   BOOT
+═══════════════════════════════════════════════════════════════════ */
+async function boot() {
+  const data = await loadData();
+  const loader = document.getElementById('loader');
+
+  if (!data || data.length === 0) {
+    loader.classList.add('hidden');
+    document.getElementById('errorBox').classList.remove('hidden');
+    return;
+  }
+
+  ALL_DATA = data;
+  FILTERED = [...data];
+
+  renderStats(data);
+  buildGroupFilters(data);
+  applyFilters();
+  renderMap(data);
+  renderTopCrops(data);
+  buildTicker(data);
+
+  // Fade out loader
+  loader.style.transition = 'opacity .6s';
+  loader.style.opacity = '0';
+  setTimeout(() => loader.classList.add('hidden'), 700);
+}
+
+boot();
+</script>
 </body>
 </html>
