@@ -4,1449 +4,1277 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>AgarLinx — Agricultural Market Intelligence</title>
-<meta name="description" content="Real-time agricultural market prices, mandi data, crop trends, and market intelligence for Indian farmers and traders."/>
+<meta name="description" content="Real-time agricultural market prices, mandi data, crop trends for Indian farmers."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-/* ===================== CSS VARIABLES ===================== */
+/* ── LIGHT THEME (DEFAULT) ──────────────────────────────── */
 :root {
-  --bg:          #f0f4f0;
-  --bg2:         #e8eee8;
-  --surface:     #ffffff;
-  --surface2:    #f7fbf7;
-  --border:      rgba(0,0,0,0.08);
-  --border2:     rgba(0,0,0,0.12);
-  --text:        #1a2e1a;
-  --text2:       #4a6741;
-  --text3:       #7a9677;
-  --green:       #2d8b4e;
-  --green2:      #3aab62;
-  --green-light: #e8f5ec;
-  --red:         #c0392b;
-  --red-light:   #fce8e6;
-  --amber:       #d97706;
-  --amber-light: #fef3cd;
-  --blue:        #1d6fa4;
-  --blue-light:  #e3f2fd;
-  --shadow:      0 2px 16px rgba(0,80,0,0.08);
-  --shadow2:     0 8px 32px rgba(0,80,0,0.12);
-  --sidebar-w:   260px;
-  --header-h:    64px;
-  --radius:      12px;
-  --radius2:     8px;
-  --trans:       all 0.25s cubic-bezier(0.4,0,0.2,1);
+  --page-bg:     #F4F7F4;
+  --sidebar-bg:  #FFFFFF;
+  --card-bg:     #FFFFFF;
+  --header-bg:   #FFFFFF;
+  --input-bg:    #F0F4F0;
+  --border:      #E2E8E2;
+  --border2:     #D0DAD0;
+  --text-1:      #1C2B1C;
+  --text-2:      #4A5E4A;
+  --text-3:      #8AA08A;
+  --accent:      #27AE60;
+  --accent2:     #1E8449;
+  --accent-bg:   #EAF7EE;
+  --accent-border:#B7E4C7;
+  --red:         #E74C3C;
+  --red-bg:      #FDECEA;
+  --amber:       #E67E22;
+  --amber-bg:    #FEF3E2;
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-md:   0 4px 24px rgba(0,0,0,0.08), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-lg:   0 8px 40px rgba(0,0,0,0.12);
+  --r:           14px;
+  --r2:          9px;
+  --sidebar-w:   248px;
+  --header-h:    62px;
+  --ease:        cubic-bezier(0.4,0,0.2,1);
 }
+/* ── DARK THEME ─────────────────────────────────────────── */
 [data-theme="dark"] {
-  --bg:          #0d1a0e;
-  --bg2:         #111f12;
-  --surface:     #172318;
-  --surface2:    #1e2e1f;
-  --border:      rgba(255,255,255,0.07);
-  --border2:     rgba(255,255,255,0.12);
-  --text:        #e8f5e9;
-  --text2:       #81c784;
-  --text3:       #4caf50;
-  --green:       #4caf50;
-  --green2:      #66bb6a;
-  --green-light: rgba(76,175,80,0.15);
-  --red:         #ef5350;
-  --red-light:   rgba(239,83,80,0.15);
-  --amber:       #ffb300;
-  --amber-light: rgba(255,179,0,0.15);
-  --blue:        #42a5f5;
-  --blue-light:  rgba(66,165,245,0.15);
-  --shadow:      0 2px 16px rgba(0,0,0,0.4);
-  --shadow2:     0 8px 32px rgba(0,0,0,0.5);
+  --page-bg:     #111814;
+  --sidebar-bg:  #161E17;
+  --card-bg:     #1C2820;
+  --header-bg:   #161E17;
+  --input-bg:    #1C2820;
+  --border:      rgba(255,255,255,0.08);
+  --border2:     rgba(255,255,255,0.14);
+  --text-1:      #E8F5E9;
+  --text-2:      #A5C8A7;
+  --text-3:      #5A8060;
+  --accent:      #4CAF50;
+  --accent2:     #66BB6A;
+  --accent-bg:   rgba(76,175,80,0.14);
+  --accent-border:rgba(76,175,80,0.3);
+  --red:         #EF5350;
+  --red-bg:      rgba(239,83,80,0.14);
+  --amber:       #FFA726;
+  --amber-bg:    rgba(255,167,38,0.14);
+  --shadow-sm:   0 1px 4px rgba(0,0,0,0.3);
+  --shadow-md:   0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg:   0 8px 40px rgba(0,0,0,0.5);
 }
-/* ===================== RESET ===================== */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{scroll-behavior:smooth;}
-body{
-  font-family:'Outfit',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  display:flex;
-  min-height:100vh;
-  transition:background 0.3s,color 0.3s;
-  overflow-x:hidden;
+/* ── RESET ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--page-bg);
+  color: var(--text-1);
+  display: flex;
+  min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
 }
-/* ===================== SIDEBAR ===================== */
-.sidebar{
-  width:var(--sidebar-w);
-  background:var(--surface);
-  border-right:1px solid var(--border);
-  display:flex;
-  flex-direction:column;
-  position:fixed;
-  top:0;left:0;bottom:0;
-  z-index:100;
-  box-shadow:var(--shadow);
-  transition:var(--trans);
-  overflow:hidden;
+/* ── SIDEBAR ────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  transition: all 0.3s var(--ease);
 }
-.sidebar-logo{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:20px 20px 16px;
-  border-bottom:1px solid var(--border);
+.sb-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 20px 18px 18px;
+  border-bottom: 1px solid var(--border);
 }
-.sidebar-logo .logo-icon{
-  width:40px;height:40px;
-  background:linear-gradient(135deg,var(--green),var(--green2));
-  border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:20px;
-  box-shadow:0 4px 12px rgba(45,139,78,0.3);
+.sb-logo {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, #27AE60, #1E8449);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(39,174,96,0.35);
+  flex-shrink: 0;
 }
-.sidebar-logo .logo-text{
-  font-size:1.3rem;font-weight:800;
-  background:linear-gradient(135deg,var(--green),var(--green2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+.sb-name { font-size: 1.15rem; font-weight: 800; color: var(--accent); letter-spacing: -0.3px; }
+.sb-tag  { font-size: 0.6rem; font-weight: 500; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.08em; }
+.sb-nav { flex: 1; padding: 14px 10px; overflow-y: auto; }
+.sb-group-label {
+  font-size: 0.62rem; font-weight: 700; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: 0.1em;
+  padding: 10px 10px 5px;
 }
-.sidebar-logo .logo-sub{
-  font-size:0.65rem;font-weight:500;color:var(--text3);
-  letter-spacing:0.05em;text-transform:uppercase;
-  -webkit-text-fill-color:var(--text3);
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--r2);
+  cursor: pointer;
+  font-size: 0.875rem; font-weight: 500; color: var(--text-2);
+  margin-bottom: 1px;
+  position: relative;
+  transition: all 0.18s var(--ease);
+  text-decoration: none;
 }
-.sidebar-nav{
-  flex:1;
-  padding:12px 10px;
-  overflow-y:auto;
+.sb-item:hover { background: var(--accent-bg); color: var(--accent); }
+.sb-item.active { background: var(--accent-bg); color: var(--accent); font-weight: 600; }
+.sb-item.active::before {
+  content: '';
+  position: absolute; left: 0; top: 20%; bottom: 20%;
+  width: 3px; background: var(--accent); border-radius: 0 2px 2px 0;
 }
-.nav-section-label{
-  font-size:0.65rem;font-weight:700;color:var(--text3);
-  text-transform:uppercase;letter-spacing:0.1em;
-  padding:10px 10px 6px;
+.sb-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+.sb-badge {
+  margin-left: auto;
+  background: var(--accent); color: #fff;
+  font-size: 0.6rem; font-weight: 700;
+  padding: 2px 6px; border-radius: 20px;
+  font-family: 'JetBrains Mono', monospace;
 }
-.nav-item{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 12px;
-  border-radius:var(--radius2);
-  cursor:pointer;
-  transition:var(--trans);
-  font-size:0.9rem;font-weight:500;color:var(--text2);
-  margin-bottom:2px;
-  position:relative;
+.sb-footer {
+  padding: 14px 16px;
+  border-top: 1px solid var(--border);
+  font-size: 0.72rem; color: var(--text-3);
+  line-height: 1.6;
 }
-.nav-item:hover{background:var(--green-light);color:var(--green);}
-.nav-item.active{
-  background:linear-gradient(135deg,var(--green-light),rgba(58,171,98,0.1));
-  color:var(--green);font-weight:600;
+.sb-footer strong { color: var(--accent); font-weight: 600; }
+/* ── MAIN AREA ──────────────────────────────────────────── */
+.main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
-.nav-item.active::before{
-  content:'';position:absolute;left:0;top:20%;bottom:20%;
-  width:3px;background:var(--green);border-radius:0 3px 3px 0;
+/* ── HEADER ─────────────────────────────────────────────── */
+.header {
+  height: var(--header-h);
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 24px;
+  gap: 14px;
+  position: sticky; top: 0; z-index: 90;
+  box-shadow: var(--shadow-sm);
 }
-.nav-icon{font-size:1.1rem;width:20px;text-align:center;}
-.nav-badge{
-  margin-left:auto;
-  background:var(--green);color:#fff;
-  font-size:0.65rem;font-weight:700;
-  padding:2px 7px;border-radius:20px;
+.hdr-breadcrumb {
+  font-size: 0.85rem; font-weight: 700; color: var(--text-1);
+  margin-right: auto;
+  display: flex; align-items: center; gap: 6px;
 }
-.sidebar-footer{
-  padding:14px 16px;
-  border-top:1px solid var(--border);
-  font-size:0.75rem;color:var(--text3);
+.hdr-breadcrumb .hdr-dot { color: var(--accent); font-size: 1.1rem; }
+/* Search */
+.search-wrap { position: relative; }
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--input-bg);
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  padding: 7px 13px;
+  width: 220px;
+  transition: all 0.2s var(--ease);
 }
-.sidebar-footer .footer-ref{
-  font-weight:600;color:var(--green);
+.search-box:focus-within {
+  border-color: var(--accent);
+  background: var(--card-bg);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+  width: 260px;
 }
-/* ===================== MAIN LAYOUT ===================== */
-.main{
-  margin-left:var(--sidebar-w);
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  min-height:100vh;
+.search-box input {
+  border: none; background: transparent;
+  font-family: 'Inter', sans-serif; font-size: 0.82rem;
+  color: var(--text-1); outline: none; width: 100%;
 }
-/* ===================== HEADER ===================== */
-.header{
-  height:var(--header-h);
-  background:var(--surface);
-  border-bottom:1px solid var(--border);
-  display:flex;align-items:center;
-  padding:0 24px;
-  gap:16px;
-  position:sticky;top:0;z-index:90;
-  box-shadow:var(--shadow);
+.search-box input::placeholder { color: var(--text-3); }
+.search-icon { color: var(--text-3); font-size: 0.85rem; }
+.search-drop {
+  position: absolute; top: calc(100% + 6px); left: 0;
+  width: 320px;
+  background: var(--card-bg);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--r); box-shadow: var(--shadow-lg);
+  display: none; z-index: 300; overflow: hidden;
+  animation: fadeUp 0.18s ease;
 }
-.header-title{font-size:1rem;font-weight:700;color:var(--text);margin-right:auto;}
-.header-title span{color:var(--green);}
-.search-box{
-  display:flex;align-items:center;gap:8px;
-  background:var(--bg);border:1px solid var(--border2);
-  border-radius:var(--radius2);
-  padding:7px 12px;
-  min-width:200px;
-  transition:var(--trans);
+.search-drop.open { display: block; }
+.sd-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
 }
-.search-box:focus-within{border-color:var(--green);box-shadow:0 0 0 3px var(--green-light);}
-.search-box input{
-  border:none;background:transparent;
-  font-family:'Outfit',sans-serif;
-  font-size:0.85rem;color:var(--text);
-  outline:none;width:100%;
+.sd-item:hover { background: var(--accent-bg); }
+.sd-item:last-child { border-bottom: none; }
+.sd-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+.sd-crop { font-size: 0.83rem; font-weight: 700; display: block; }
+.sd-market { font-size: 0.7rem; color: var(--text-3); }
+.sd-price { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 700; color: var(--accent); margin-left: auto; }
+/* Live pill */
+.live-pill {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  font-size: 0.72rem; font-weight: 700;
+  padding: 5px 11px; border-radius: 20px;
+  white-space: nowrap;
 }
-.search-box input::placeholder{color:var(--text3);}
-.search-box .s-icon{color:var(--text3);font-size:0.9rem;}
-.live-pill{
-  display:flex;align-items:center;gap:6px;
-  background:var(--green-light);
-  border:1px solid rgba(45,139,78,0.25);
-  color:var(--green);
-  font-size:0.75rem;font-weight:700;
-  padding:5px 10px;border-radius:20px;
-  cursor:default;
+.live-dot {
+  width: 7px; height: 7px;
+  background: var(--accent); border-radius: 50%;
+  animation: blink 1.4s ease infinite;
 }
-.live-dot{
-  width:7px;height:7px;
-  background:var(--green);border-radius:50%;
-  animation:pulse 1.5s infinite;
+@keyframes blink { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(1.3);} }
+/* Notification */
+.notif-wrap { position: relative; }
+.notif-btn {
+  background: none; border: 1.5px solid var(--border);
+  border-radius: var(--r2); padding: 7px 9px;
+  cursor: pointer; color: var(--text-2); font-size: 1rem;
+  transition: all 0.18s var(--ease);
+  display: flex; align-items: center; gap: 5px;
 }
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.5;transform:scale(1.4);}}
-/* NOTIFICATION BELL */
-.notif-btn{
-  position:relative;
-  background:none;border:none;cursor:pointer;
-  padding:8px;border-radius:var(--radius2);
-  color:var(--text2);font-size:1.1rem;
-  transition:var(--trans);
+.notif-btn:hover { background: var(--accent-bg); border-color: var(--accent); color: var(--accent); }
+.nb-count {
+  background: var(--red); color: #fff;
+  font-size: 0.58rem; font-weight: 700;
+  padding: 1px 5px; border-radius: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  min-width: 16px; text-align: center;
 }
-.notif-btn:hover{background:var(--green-light);color:var(--green);}
-.notif-count{
-  position:absolute;top:2px;right:2px;
-  background:var(--red);color:#fff;
-  font-size:0.6rem;font-weight:700;
-  width:16px;height:16px;
-  border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
+.notif-panel {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 340px;
+  background: var(--card-bg);
+  border: 1.5px solid var(--border2);
+  border-radius: var(--r); box-shadow: var(--shadow-lg);
+  display: none; flex-direction: column;
+  z-index: 300; overflow: hidden;
 }
-.notif-panel{
-  position:absolute;top:calc(var(--header-h) + 4px);right:0;
-  width:340px;
-  background:var(--surface);
-  border:1px solid var(--border2);
-  border-radius:var(--radius);
-  box-shadow:var(--shadow2);
-  display:none;
-  flex-direction:column;
-  z-index:200;
-  overflow:hidden;
-  animation:slideDown 0.2s ease;
+.notif-panel.open { display: flex; animation: fadeUp 0.2s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(-8px);} to{opacity:1;transform:translateY(0);} }
+.np-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 15px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 700; font-size: 0.85rem;
 }
-.notif-panel.open{display:flex;}
-@keyframes slideDown{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
-.notif-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:14px 16px;
-  border-bottom:1px solid var(--border);
-  font-weight:700;font-size:0.9rem;
+.np-clear { font-size: 0.72rem; color: var(--accent); cursor: pointer; font-weight: 500; }
+.np-list { max-height: 320px; overflow-y: auto; }
+.np-item {
+  display: flex; gap: 11px; align-items: flex-start;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
 }
-.notif-clear{font-size:0.75rem;color:var(--green);cursor:pointer;font-weight:500;}
-.notif-list{max-height:320px;overflow-y:auto;}
-.notif-item{
-  display:flex;gap:12px;align-items:flex-start;
-  padding:12px 16px;
-  border-bottom:1px solid var(--border);
-  transition:var(--trans);
-  cursor:pointer;
+.np-item:last-child { border-bottom: none; }
+.np-item:hover { background: var(--page-bg); }
+.np-item.unread.rise { background: var(--accent-bg); }
+.np-item.unread.fall { background: var(--red-bg); }
+.np-ico {
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.95rem; flex-shrink: 0;
 }
-.notif-item:hover{background:var(--bg);}
-.notif-item.unread{background:var(--green-light);}
-.notif-item.unread[data-type="fall"]{background:var(--red-light);}
-.notif-icon{
-  width:36px;height:36px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1rem;flex-shrink:0;
+.np-ico.rise { background: var(--accent-bg); }
+.np-ico.fall { background: var(--red-bg); }
+.np-info strong { font-size: 0.8rem; font-weight: 600; line-height: 1.3; display: block; }
+.np-info p { font-size: 0.72rem; color: var(--text-2); margin-top: 2px; }
+.np-info small { font-size: 0.65rem; color: var(--text-3); margin-top: 3px; display: block; }
+/* Theme btn */
+.theme-btn {
+  background: none; border: 1.5px solid var(--border);
+  cursor: pointer; padding: 7px 10px; border-radius: var(--r2);
+  font-size: 0.95rem; color: var(--text-2);
+  transition: all 0.18s var(--ease);
 }
-.notif-icon.rise{background:var(--green-light);color:var(--green);}
-.notif-icon.fall{background:var(--red-light);color:var(--red);}
-.notif-icon.info{background:var(--amber-light);color:var(--amber);}
-.notif-body{flex:1;}
-.notif-body strong{font-size:0.82rem;font-weight:600;}
-.notif-body p{font-size:0.75rem;color:var(--text2);margin-top:2px;line-height:1.4;}
-.notif-body small{font-size:0.68rem;color:var(--text3);display:block;margin-top:4px;}
-/* THEME TOGGLE */
-.theme-btn{
-  background:none;border:1px solid var(--border2);
-  cursor:pointer;padding:7px 10px;border-radius:var(--radius2);
-  font-size:1rem;color:var(--text2);
-  transition:var(--trans);
+.theme-btn:hover { background: var(--accent-bg); border-color: var(--accent); }
+/* ── CONTENT ────────────────────────────────────────────── */
+.content { padding: 22px; flex: 1; }
+/* ── TICKER ─────────────────────────────────────────────── */
+.ticker {
+  display: flex; align-items: center;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  height: 42px; overflow: hidden;
+  margin-bottom: 18px;
 }
-.theme-btn:hover{background:var(--green-light);border-color:var(--green);}
-/* ===================== CONTENT ===================== */
-.content{padding:24px;flex:1;}
-/* ===================== PRICE TICKER ===================== */
-.ticker-wrap{
-  overflow:hidden;
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:0 16px;
-  margin-bottom:20px;
-  height:40px;
-  display:flex;align-items:center;
-  gap:0;
+.ticker-lbl {
+  font-size: 0.65rem; font-weight: 800; letter-spacing: 0.1em;
+  color: var(--accent); text-transform: uppercase;
+  padding: 0 16px; white-space: nowrap;
+  border-right: 1px solid var(--border);
+  display: flex; align-items: center; gap: 6px; height: 100%;
+  background: var(--accent-bg);
+  flex-shrink: 0;
 }
-.ticker-label{
-  font-size:0.7rem;font-weight:700;letter-spacing:0.08em;
-  color:var(--green);text-transform:uppercase;
-  white-space:nowrap;
-  padding-right:16px;
-  border-right:1px solid var(--border2);
-  margin-right:0;
+.ticker-track { flex: 1; overflow: hidden; }
+.ticker-inner {
+  display: flex; width: max-content;
+  animation: scroll-x 50s linear infinite;
 }
-.ticker-track{
-  flex:1;overflow:hidden;position:relative;
+.ticker-inner:hover { animation-play-state: paused; }
+@keyframes scroll-x { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+.t-item {
+  display: flex; align-items: center; gap: 7px;
+  padding: 0 18px; border-right: 1px solid var(--border);
+  height: 42px; white-space: nowrap;
+  font-size: 0.78rem; font-family: 'JetBrains Mono', monospace;
+  cursor: default;
 }
-.ticker-inner{
-  display:flex;gap:0;
-  animation:ticker 40s linear infinite;
-  width:max-content;
+.t-crop { font-weight: 600; color: var(--text-1); }
+.t-price { color: var(--text-2); }
+.t-up   { color: var(--accent); font-weight: 700; }
+.t-dn   { color: var(--red);    font-weight: 700; }
+/* ── HERO ───────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(135deg, #1D6A3A 0%, #27AE60 55%, #52C87A 100%);
+  border-radius: var(--r);
+  padding: 22px 28px;
+  margin-bottom: 18px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; overflow: hidden;
+  box-shadow: 0 6px 28px rgba(39,174,96,0.28);
 }
-.ticker-inner:hover{animation-play-state:paused;}
-.ticker-item{
-  display:flex;align-items:center;gap:6px;
-  font-size:0.78rem;font-weight:500;
-  padding:0 20px;border-right:1px solid var(--border);
-  white-space:nowrap;
-  font-family:'JetBrains Mono',monospace;
+.hero::after {
+  content: '🌾';
+  position: absolute; right: 22px; top: 50%; transform: translateY(-50%);
+  font-size: 5.5rem; opacity: 0.12; pointer-events: none;
 }
-.ticker-item .t-crop{color:var(--text);font-weight:600;}
-.ticker-item .t-price{color:var(--text2);}
-.ticker-item .t-change.up{color:var(--green);}
-.ticker-item .t-change.down{color:var(--red);}
-@keyframes ticker{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
-/* ===================== KPI CARDS ===================== */
-.kpi-row{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:16px;
-  margin-bottom:20px;
+.hero-l h2 { font-size: 1.3rem; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.hero-l p  { font-size: 0.82rem; color: rgba(255,255,255,0.82); }
+.hero-r { text-align: right; z-index: 1; }
+.hero-r .h-date { font-size: 1rem; font-weight: 700; color: #fff; }
+.hero-r .h-season {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(255,255,255,0.18);
+  color: #fff; font-size: 0.72rem; font-weight: 600;
+  padding: 4px 10px; border-radius: 20px; margin-top: 7px;
 }
-.kpi-card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  padding:18px 20px;
-  display:flex;align-items:flex-start;gap:14px;
-  transition:var(--trans);
-  cursor:default;
+/* ── KPI CARDS ──────────────────────────────────────────── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
 }
-.kpi-card:hover{box-shadow:var(--shadow2);transform:translateY(-2px);}
-.kpi-icon{
-  width:48px;height:48px;border-radius:var(--radius2);
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.4rem;flex-shrink:0;
+.kpi {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  display: flex; align-items: flex-start; gap: 13px;
+  transition: box-shadow 0.2s var(--ease), transform 0.2s var(--ease);
 }
-.kpi-icon.green{background:var(--green-light);}
-.kpi-icon.red{background:var(--red-light);}
-.kpi-icon.amber{background:var(--amber-light);}
-.kpi-icon.blue{background:var(--blue-light);}
-.kpi-info{flex:1;}
-.kpi-label{font-size:0.72rem;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;}
-.kpi-value{font-size:1.6rem;font-weight:800;color:var(--text);line-height:1.1;margin:4px 0 2px;}
-.kpi-sub{font-size:0.75rem;color:var(--text3);}
-.kpi-sub .up{color:var(--green);}
-.kpi-sub .down{color:var(--red);}
-/* ===================== HERO / DATE BANNER ===================== */
-.hero-banner{
-  background:linear-gradient(120deg,#1a5c28 0%,#2d8b4e 40%,#3aab62 70%,#5dcb7f 100%);
-  border-radius:var(--radius);
-  padding:20px 28px;
-  margin-bottom:20px;
-  display:flex;align-items:center;justify-content:space-between;
-  position:relative;overflow:hidden;
-  box-shadow:0 4px 24px rgba(45,139,78,0.25);
+.kpi:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.kpi-ico {
+  width: 46px; height: 46px;
+  border-radius: var(--r2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; flex-shrink: 0;
 }
-.hero-banner::before{
-  content:'🌾';
-  position:absolute;right:28px;top:50%;transform:translateY(-50%);
-  font-size:5rem;opacity:0.15;
-  pointer-events:none;
+.kpi-ico.g { background: var(--accent-bg); }
+.kpi-ico.b { background: #EFF6FF; }
+.kpi-ico.a { background: var(--amber-bg); }
+.kpi-ico.r { background: var(--red-bg); }
+[data-theme="dark"] .kpi-ico.b { background: rgba(66,165,245,0.14); }
+.kpi-lbl { font-size: 0.68rem; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.04em; }
+.kpi-val { font-size: 1.55rem; font-weight: 800; color: var(--text-1); line-height: 1.1; margin: 3px 0 2px; }
+.kpi-sub { font-size: 0.72rem; color: var(--text-3); }
+.kpi-sub .up { color: var(--accent); }
+.kpi-sub .dn { color: var(--red); }
+/* ── GRID LAYOUTS ───────────────────────────────────────── */
+.grid-2   { display: grid; grid-template-columns: 1fr 360px; gap: 16px; margin-bottom: 16px; }
+.grid-2b  { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.col-stack { display: flex; flex-direction: column; gap: 16px; }
+/* ── CARD ───────────────────────────────────────────────── */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
 }
-.hero-banner::after{
-  content:'🌿';
-  position:absolute;right:120px;top:50%;transform:translateY(-60%);
-  font-size:3rem;opacity:0.1;
-  pointer-events:none;
+.card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
 }
-.hero-title{font-size:1.4rem;font-weight:800;color:#fff;margin-bottom:4px;}
-.hero-sub{font-size:0.85rem;color:rgba(255,255,255,0.8);}
-.hero-meta{text-align:right;}
-.hero-date{font-size:1rem;font-weight:700;color:#fff;}
-.hero-season{
-  display:inline-flex;align-items:center;gap:6px;
-  background:rgba(255,255,255,0.2);
-  color:#fff;font-size:0.75rem;font-weight:600;
-  padding:4px 10px;border-radius:20px;margin-top:6px;
+.card-head h3 { font-size: 0.9rem; font-weight: 700; color: var(--text-1); }
+.card-sub { font-size: 0.72rem; color: var(--text-3); }
+.card-body { padding: 14px 18px; }
+/* Tab pills */
+.tabs {
+  display: flex; gap: 3px;
+  background: var(--input-bg);
+  border-radius: 8px; padding: 3px;
 }
-/* ===================== TWO-COLUMN GRID ===================== */
-.two-col{display:grid;grid-template-columns:1fr 380px;gap:20px;margin-bottom:20px;}
-.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:20px;}
-/* ===================== PANEL ===================== */
-.panel{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--radius);
-  overflow:hidden;
+.tab {
+  padding: 4px 11px; border-radius: 6px;
+  font-size: 0.74rem; font-weight: 600;
+  cursor: pointer; color: var(--text-3);
+  border: none; background: transparent;
+  transition: all 0.18s var(--ease);
 }
-.panel-head{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 20px;
-  border-bottom:1px solid var(--border);
+.tab.active { background: var(--card-bg); color: var(--accent); box-shadow: var(--shadow-sm); }
+/* ── MAP ────────────────────────────────────────────────── */
+#map { height: 360px; }
+.leaflet-popup-content-wrapper {
+  background: var(--card-bg) !important;
+  color: var(--text-1) !important;
+  border: 1px solid var(--border2) !important;
+  border-radius: 10px !important;
+  box-shadow: var(--shadow-lg) !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.8rem !important;
 }
-.panel-head h3{font-size:0.95rem;font-weight:700;color:var(--text);}
-.panel-head .panel-sub{font-size:0.75rem;color:var(--text3);}
-.panel-body{padding:16px 20px;}
-.panel-tabs{
-  display:flex;gap:4px;
-  background:var(--bg);border-radius:var(--radius2);
-  padding:3px;
+.leaflet-popup-tip { background: var(--card-bg) !important; }
+/* ── CHART ──────────────────────────────────────────────── */
+.chart-box { padding: 14px 18px; height: 260px; }
+/* ── PRICE TABLE ────────────────────────────────────────── */
+.ptable { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.ptable th {
+  padding: 8px 13px; text-align: left;
+  font-size: 0.64rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.05em; color: var(--text-3);
+  background: var(--input-bg);
+  border-bottom: 1px solid var(--border);
 }
-.ptab{
-  padding:5px 12px;border-radius:6px;
-  font-size:0.78rem;font-weight:600;
-  cursor:pointer;color:var(--text3);
-  transition:var(--trans);
-  border:none;background:transparent;
+.ptable td {
+  padding: 10px 13px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-1); vertical-align: middle;
 }
-.ptab.active{background:var(--surface);color:var(--green);box-shadow:var(--shadow);}
-/* ===================== MAP ===================== */
-#market-map{
-  height:360px;
-  border-radius:0 0 var(--radius) var(--radius);
-  transition:var(--trans);
+.ptable tr:last-child td { border-bottom: none; }
+.ptable tr:hover td { background: var(--accent-bg); cursor: pointer; }
+.cbadge { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.chip {
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 2px 8px; border-radius: 20px;
+  font-size: 0.7rem; font-weight: 700;
 }
-.leaflet-popup-content-wrapper{
-  background:var(--surface);color:var(--text);
-  border:1px solid var(--border2);
-  border-radius:var(--radius2);
-  box-shadow:var(--shadow2);
-  font-family:'Outfit',sans-serif;
-  font-size:0.82rem;
+.chip.up { background: var(--accent-bg); color: var(--accent); }
+.chip.dn { background: var(--red-bg); color: var(--red); }
+/* ── GAINERS / LOSERS ───────────────────────────────────── */
+.gl-list { display: flex; flex-direction: column; gap: 7px; }
+.gl-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 9px 12px;
+  background: var(--input-bg); border-radius: var(--r2);
+  cursor: pointer;
+  transition: all 0.18s var(--ease);
 }
-.leaflet-popup-tip{background:var(--surface);}
-/* ===================== CHART ===================== */
-.chart-wrap{
-  position:relative;
-  padding:16px 20px;
-  height:250px;
+.gl-item:hover { background: var(--accent-bg); transform: translateX(3px); }
+.gl-em { font-size: 1.1rem; width: 26px; text-align: center; }
+.gl-meta { flex: 1; }
+.gl-meta strong { font-size: 0.82rem; font-weight: 700; display: block; }
+.gl-meta span   { font-size: 0.68rem; color: var(--text-3); }
+.gl-right { text-align: right; }
+.gl-p { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; font-weight: 700; }
+.gl-c { font-size: 0.72rem; font-weight: 700; }
+.gl-c.up { color: var(--accent); }
+.gl-c.dn { color: var(--red); }
+/* ── MODAL ──────────────────────────────────────────────── */
+.overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 500; align-items: center; justify-content: center;
+  backdrop-filter: blur(5px);
 }
-/* ===================== PRICE TABLE ===================== */
-.price-table{width:100%;border-collapse:collapse;font-size:0.82rem;}
-.price-table th{
-  padding:8px 14px;text-align:left;
-  font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;
-  color:var(--text3);background:var(--bg);
-  border-bottom:1px solid var(--border);
+.overlay.open { display: flex; }
+.modal {
+  background: var(--card-bg);
+  border-radius: var(--r);
+  width: 580px; max-width: 94vw;
+  max-height: 88vh; overflow-y: auto;
+  box-shadow: var(--shadow-lg);
+  animation: scaleIn 0.22s var(--ease);
 }
-.price-table td{
-  padding:10px 14px;border-bottom:1px solid var(--border);
-  color:var(--text);vertical-align:middle;
+@keyframes scaleIn { from{opacity:0;transform:scale(0.96);} to{opacity:1;transform:scale(1);} }
+.modal-hd {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
 }
-.price-table tr:last-child td{border-bottom:none;}
-.price-table tr:hover td{background:var(--bg);}
-.crop-badge{
-  display:inline-flex;align-items:center;gap:6px;
-  font-weight:600;
+.modal-hd h2 { font-size: 1.05rem; font-weight: 800; }
+.modal-close {
+  background: none; border: none; cursor: pointer;
+  font-size: 1.2rem; color: var(--text-3);
+  padding: 4px 8px; border-radius: 7px;
+  transition: all 0.15s;
 }
-.crop-emoji{font-size:1rem;}
-.change-chip{
-  display:inline-flex;align-items:center;gap:3px;
-  padding:3px 8px;border-radius:20px;
-  font-weight:700;font-size:0.75rem;
+.modal-close:hover { background: var(--red-bg); color: var(--red); }
+.modal-bd { padding: 18px 22px; }
+.m-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 14px;
 }
-.change-chip.up{background:var(--green-light);color:var(--green);}
-.change-chip.down{background:var(--red-light);color:var(--red);}
-/* ===================== GAINERS/LOSERS ===================== */
-.gl-list{display:flex;flex-direction:column;gap:8px;}
-.gl-item{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 14px;
-  background:var(--bg);border-radius:var(--radius2);
-  transition:var(--trans);
-  cursor:pointer;
+.m-stat {
+  background: var(--input-bg); border-radius: var(--r2);
+  padding: 11px 13px;
 }
-.gl-item:hover{transform:translateX(4px);}
-.gl-icon{font-size:1.2rem;width:28px;text-align:center;}
-.gl-info{flex:1;}
-.gl-info strong{font-size:0.85rem;font-weight:700;display:block;}
-.gl-info span{font-size:0.72rem;color:var(--text3);}
-.gl-price{font-family:'JetBrains Mono',monospace;font-size:0.85rem;font-weight:700;}
-.gl-change{font-size:0.78rem;font-weight:600;text-align:right;}
-.gl-change.up{color:var(--green);}
-.gl-change.down{color:var(--red);}
-/* ===================== CROP DETAIL MODAL ===================== */
-.modal-overlay{
-  display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,0.5);
-  z-index:500;align-items:center;justify-content:center;
-  backdrop-filter:blur(4px);
-}
-.modal-overlay.open{display:flex;}
-.modal{
-  background:var(--surface);
-  border-radius:var(--radius);
-  width:600px;max-width:95vw;
-  max-height:90vh;overflow-y:auto;
-  box-shadow:var(--shadow2);
-  animation:modalIn 0.25s ease;
-}
-@keyframes modalIn{from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);}}
-.modal-head{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:20px 24px;
-  border-bottom:1px solid var(--border);
-}
-.modal-head h2{font-size:1.1rem;font-weight:800;}
-.modal-close{
-  background:none;border:none;cursor:pointer;
-  font-size:1.3rem;color:var(--text3);
-  padding:4px 8px;border-radius:6px;
-  transition:var(--trans);
-}
-.modal-close:hover{background:var(--red-light);color:var(--red);}
-.modal-body{padding:20px 24px;}
-.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
-.modal-stat{
-  background:var(--bg);border-radius:var(--radius2);
-  padding:12px 14px;
-}
-.modal-stat label{font-size:0.68rem;font-weight:700;color:var(--text3);text-transform:uppercase;}
-.modal-stat p{font-size:1rem;font-weight:700;color:var(--text);margin-top:4px;}
+.m-stat label { font-size: 0.64rem; font-weight: 700; color: var(--text-3); text-transform: uppercase; display: block; }
+.m-stat p { font-size: 0.95rem; font-weight: 700; margin-top: 3px; }
 /* Calculator */
-.calc-section{
-  background:var(--green-light);
-  border:1px solid rgba(45,139,78,0.2);
-  border-radius:var(--radius2);
-  padding:16px;
-  margin-top:16px;
+.calc {
+  background: var(--accent-bg);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--r2); padding: 14px;
+  margin-top: 14px;
 }
-.calc-section h4{font-size:0.85rem;font-weight:700;color:var(--green);margin-bottom:10px;}
-.calc-row{display:flex;gap:10px;align-items:flex-end;}
-.calc-field{flex:1;}
-.calc-field label{font-size:0.72rem;font-weight:600;color:var(--text2);display:block;margin-bottom:4px;}
-.calc-field input,
-.calc-field select{
-  width:100%;padding:8px 10px;
-  background:var(--surface);border:1px solid var(--border2);
-  border-radius:6px;font-family:'Outfit',sans-serif;
-  font-size:0.85rem;color:var(--text);outline:none;
-  transition:var(--trans);
+.calc h4 { font-size: 0.8rem; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+.calc-row { display: flex; gap: 9px; align-items: flex-end; }
+.cf { flex: 1; }
+.cf label { font-size: 0.7rem; font-weight: 600; color: var(--text-2); display: block; margin-bottom: 4px; }
+.cf input, .cf select {
+  width: 100%; padding: 8px 10px;
+  background: var(--card-bg); border: 1.5px solid var(--border2);
+  border-radius: 7px; font-family: 'Inter', sans-serif;
+  font-size: 0.82rem; color: var(--text-1); outline: none;
 }
-.calc-field input:focus{border-color:var(--green);}
-.calc-result{
-  background:var(--green);color:#fff;
-  border-radius:6px;padding:8px 14px;
-  font-weight:700;font-size:0.9rem;
-  white-space:nowrap;cursor:default;
+.cf input:focus { border-color: var(--accent); }
+.c-result {
+  background: var(--accent); color: #fff;
+  border-radius: 7px; padding: 8px 13px;
+  font-weight: 700; font-size: 0.88rem;
+  white-space: nowrap;
 }
-.btn-primary{
-  background:linear-gradient(135deg,var(--green),var(--green2));
-  color:#fff;border:none;
-  padding:8px 18px;border-radius:var(--radius2);
-  font-family:'Outfit',sans-serif;font-size:0.85rem;font-weight:700;
-  cursor:pointer;transition:var(--trans);
-  box-shadow:0 4px 12px rgba(45,139,78,0.25);
+/* ── STATUS BAR ─────────────────────────────────────────── */
+.status {
+  padding: 10px 22px;
+  background: var(--card-bg);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 14px;
+  font-size: 0.68rem; color: var(--text-3);
+  flex-wrap: wrap;
 }
-.btn-primary:hover{box-shadow:0 6px 20px rgba(45,139,78,0.35);transform:translateY(-1px);}
-/* ===================== SEARCH DROPDOWN ===================== */
-.search-dropdown{
-  position:absolute;top:calc(var(--header-h) + 4px);left:50%;transform:translateX(-50%);
-  width:400px;
-  background:var(--surface);border:1px solid var(--border2);
-  border-radius:var(--radius);box-shadow:var(--shadow2);
-  z-index:200;display:none;max-height:300px;overflow-y:auto;
+.status strong { color: var(--text-2); }
+.sep { opacity: 0.3; }
+/* ── LOADING / EMPTY ────────────────────────────────────── */
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 24px auto;
 }
-.search-dropdown.open{display:block;animation:slideDown 0.2s ease;}
-.search-result-item{
-  display:flex;align-items:center;gap:12px;
-  padding:10px 16px;cursor:pointer;
-  transition:var(--trans);
-  border-bottom:1px solid var(--border);
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty { text-align: center; padding: 28px 16px; color: var(--text-3); }
+.empty .ei { font-size: 2.2rem; margin-bottom: 8px; }
+.empty p { font-size: 0.8rem; }
+/* ── SCROLLBAR ──────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+/* ── RESPONSIVE ─────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  .grid-2  { grid-template-columns: 1fr; }
+  .grid-2b { grid-template-columns: 1fr; }
 }
-.search-result-item:hover{background:var(--green-light);}
-.search-result-item:last-child{border-bottom:none;}
-.sri-icon{font-size:1.1rem;width:24px;text-align:center;}
-.sri-info strong{font-size:0.85rem;font-weight:700;display:block;}
-.sri-info span{font-size:0.72rem;color:var(--text3);}
-.sri-price{font-family:'JetBrains Mono',monospace;font-size:0.82rem;font-weight:700;color:var(--green);margin-left:auto;}
-/* ===================== STATUS BAR ===================== */
-.status-bar{
-  padding:12px 24px;
-  background:var(--surface2);
-  border-top:1px solid var(--border);
-  display:flex;align-items:center;gap:16px;
-  font-size:0.72rem;color:var(--text3);
-}
-.status-bar .sep{opacity:0.3;}
-.status-bar strong{color:var(--text2);}
-/* ===================== EMPTY / LOADING ===================== */
-.loading-ring{
-  width:40px;height:40px;
-  border:3px solid var(--border2);
-  border-top-color:var(--green);
-  border-radius:50%;
-  animation:spin 0.8s linear infinite;
-  margin:24px auto;
-}
-@keyframes spin{to{transform:rotate(360deg);}}
-.empty-state{text-align:center;padding:32px 20px;color:var(--text3);}
-.empty-state .e-icon{font-size:2.5rem;margin-bottom:12px;}
-.empty-state p{font-size:0.85rem;}
-/* ===================== SCROLLBAR ===================== */
-::-webkit-scrollbar{width:6px;height:6px;}
-::-webkit-scrollbar-track{background:transparent;}
-::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
-::-webkit-scrollbar-thumb:hover{background:var(--green2);}
-/* ===================== RESPONSIVE ===================== */
-@media(max-width:1200px){
-  .kpi-row{grid-template-columns:repeat(2,1fr);}
-  .two-col{grid-template-columns:1fr;}
-  .three-col{grid-template-columns:1fr 1fr;}
-}
-@media(max-width:768px){
-  :root{--sidebar-w:0px;}
-  .sidebar{transform:translateX(-260px);width:260px;}
-  .sidebar.mobile-open{transform:translateX(0);}
-  .three-col{grid-template-columns:1fr;}
-  .kpi-row{grid-template-columns:1fr 1fr;}
+@media (max-width: 768px) {
+  :root { --sidebar-w: 0px; }
+  .sidebar { transform: translateX(-248px); width: 248px; }
+  .sidebar.open { transform: translateX(0); }
+  .kpi-row { grid-template-columns: 1fr; }
 }
 </style>
 </head>
 <body>
-<!-- =========== SIDEBAR =========== -->
+<!-- ═══ SIDEBAR ═════════════════════════════════════════════ -->
 <aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    <div class="logo-icon">🌱</div>
+  <div class="sb-brand">
+    <div class="sb-logo">🌱</div>
     <div>
-      <div class="logo-text">AgarLinx</div>
-      <div class="logo-sub">Market Intelligence</div>
+      <div class="sb-name">AgarLinx</div>
+      <div class="sb-tag">Market Intelligence</div>
     </div>
   </div>
-  <nav class="sidebar-nav">
-    <div class="nav-section-label">Main</div>
-    <div class="nav-item active" onclick="navigate('dashboard')">
-      <span class="nav-icon">📊</span> Dashboard
+  <nav class="sb-nav">
+    <div class="sb-group-label">Overview</div>
+    <div class="sb-item active" onclick="nav(this,'dashboard')">
+      <span class="sb-icon">📊</span> Dashboard
     </div>
-    <div class="nav-item" onclick="navigate('prices')">
-      <span class="nav-icon">💹</span> Live Prices
-      <span class="nav-badge" id="price-count">—</span>
+    <div class="sb-item" onclick="nav(this,'prices')">
+      <span class="sb-icon">💹</span> Live Prices
+      <span class="sb-badge" id="badge-count">—</span>
     </div>
-    <div class="nav-item" onclick="navigate('map')">
-      <span class="nav-icon">🗺️</span> Mandi Map
+    <div class="sb-item" onclick="nav(this,'map')">
+      <span class="sb-icon">🗺️</span> Mandi Map
     </div>
-    <div class="nav-item" onclick="navigate('trends')">
-      <span class="nav-icon">📈</span> Trends
+    <div class="sb-item" onclick="nav(this,'trends')">
+      <span class="sb-icon">📈</span> Trends
     </div>
-    <div class="nav-section-label">Tools</div>
-    <div class="nav-item" onclick="navigate('calculator')">
-      <span class="nav-icon">🧮</span> Price Calculator
+    <div class="sb-group-label">Tools</div>
+    <div class="sb-item" onclick="nav(this,'calculator')">
+      <span class="sb-icon">🧮</span> Price Calculator
     </div>
-    <div class="nav-item" onclick="navigate('alerts')">
-      <span class="nav-icon">🔔</span> My Alerts
+    <div class="sb-item" onclick="nav(this,'alerts')">
+      <span class="sb-icon">🔔</span> Market Alerts
     </div>
-    <div class="nav-section-label">Info</div>
-    <div class="nav-item" onclick="navigate('about')">
-      <span class="nav-icon">ℹ️</span> About
+    <div class="sb-group-label">System</div>
+    <div class="sb-item" onclick="nav(this,'about')">
+      <span class="sb-icon">ℹ️</span> About
     </div>
   </nav>
-  <div class="sidebar-footer">
-    <div class="footer-ref" id="sidebar-ref">AgarLinx</div>
-    <div id="sidebar-date" style="margin-top:2px;">Loading…</div>
-    <div id="sidebar-season" style="margin-top:2px;">Season: —</div>
+  <div class="sb-footer">
+    <strong id="sb-ref">AgarLinx</strong><br/>
+    <span id="sb-date">—</span><br/>
+    Season: <span id="sb-season">—</span>
   </div>
 </aside>
-<!-- =========== MAIN =========== -->
+<!-- ═══ MAIN ════════════════════════════════════════════════ -->
 <div class="main">
   <!-- HEADER -->
   <header class="header">
-    <span class="header-title">Agri <span>Market</span> Intelligence</span>
-    <div style="position:relative;">
+    <div class="hdr-breadcrumb">
+      <span class="hdr-dot">🌿</span>
+      <span>Agri <b style="color:var(--accent)">Market</b> Intelligence</span>
+    </div>
+    <!-- Search -->
+    <div class="search-wrap">
       <div class="search-box">
-        <span class="s-icon">🔍</span>
-        <input id="search-input" type="text" placeholder="Search crop or mandi…" autocomplete="off"
-               oninput="onSearchInput(this.value)" onfocus="onSearchFocus()" onblur="onSearchBlur()"/>
+        <span class="search-icon">🔍</span>
+        <input id="srch" type="text" placeholder="Search crop or mandi…" autocomplete="off"
+          oninput="doSearch(this.value)" onfocus="doSearch(this.value)" onblur="closeSearch()"/>
       </div>
-      <div class="search-dropdown" id="search-dropdown"></div>
+      <div class="search-drop" id="srch-drop"></div>
     </div>
-    <div class="live-pill" id="live-pill">
+    <!-- Live -->
+    <div class="live-pill">
       <div class="live-dot"></div>
-      <span id="live-time">Live</span>
+      <span id="live-clock">Live</span>
     </div>
-    <!-- NOTIFICATION BUTTON -->
-    <div style="position:relative;">
-      <button class="notif-btn" id="notif-btn" onclick="toggleNotif()" title="Market Alerts">
-        🔔
-        <span class="notif-count" id="notif-count">0</span>
+    <!-- Notif -->
+    <div class="notif-wrap">
+      <button class="notif-btn" id="notif-btn" onclick="toggleNotif()">
+        🔔 <span class="nb-count" id="nb-cnt">0</span>
       </button>
       <div class="notif-panel" id="notif-panel">
-        <div class="notif-header">
-          <span>Market Alerts</span>
-          <span class="notif-clear" onclick="clearNotifs()">Clear all</span>
+        <div class="np-head">
+          <span>📡 Market Alerts</span>
+          <span class="np-clear" onclick="clearNotif()">Clear all</span>
         </div>
-        <div class="notif-list" id="notif-list">
-          <div class="empty-state"><div class="e-icon">🔔</div><p>No alerts yet</p></div>
+        <div class="np-list" id="np-list">
+          <div class="empty"><div class="ei">🔔</div><p>No alerts yet</p></div>
         </div>
       </div>
     </div>
-    <!-- THEME TOGGLE -->
-    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle theme">🌙</button>
+    <!-- Theme -->
+    <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle dark/light">🌙</button>
   </header>
   <!-- CONTENT -->
-  <main class="content" id="main-content">
-    <!-- PRICE TICKER -->
-    <div class="ticker-wrap">
-      <div class="ticker-label">📡 Live</div>
+  <main class="content" id="page">
+    <!-- TICKER -->
+    <div class="ticker" id="ticker">
+      <div class="ticker-lbl"><span>📡</span> LIVE</div>
       <div class="ticker-track">
         <div class="ticker-inner" id="ticker-inner">
-          <div class="ticker-item"><span class="t-crop">Loading…</span></div>
+          <div class="t-item"><span class="t-crop">Loading data…</span></div>
         </div>
       </div>
     </div>
-    <!-- HERO BANNER -->
-    <div class="hero-banner">
-      <div>
-        <div class="hero-title">🌾 Today's Market Overview</div>
-        <div class="hero-sub" id="hero-sub">Loading market data…</div>
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-l">
+        <h2>🌾 Today's Market Overview</h2>
+        <p id="hero-sub">Loading market data…</p>
       </div>
-      <div class="hero-meta">
-        <div class="hero-date" id="hero-date">—</div>
-        <div class="hero-season" id="hero-season"><span>🌿</span><span>—</span></div>
+      <div class="hero-r">
+        <div class="h-date" id="hero-date">—</div>
+        <div class="h-season" id="hero-season"><span>🌿</span><span>—</span></div>
       </div>
     </div>
-    <!-- KPI ROW -->
+    <!-- KPIs -->
     <div class="kpi-row">
-      <div class="kpi-card">
-        <div class="kpi-icon green">🌾</div>
-        <div class="kpi-info">
-          <div class="kpi-label">Crops Tracked</div>
-          <div class="kpi-value" id="kpi-crops">—</div>
+      <div class="kpi">
+        <div class="kpi-ico g">🌾</div>
+        <div>
+          <div class="kpi-lbl">Crops Tracked</div>
+          <div class="kpi-val" id="k-crops">—</div>
           <div class="kpi-sub">in this report</div>
         </div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon blue">🏪</div>
-        <div class="kpi-info">
-          <div class="kpi-label">Mandis Covered</div>
-          <div class="kpi-value" id="kpi-mandis">—</div>
+      <div class="kpi">
+        <div class="kpi-ico b">🏪</div>
+        <div>
+          <div class="kpi-lbl">Mandis Covered</div>
+          <div class="kpi-val" id="k-mandis">—</div>
           <div class="kpi-sub">market centres</div>
         </div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon amber">📈</div>
-        <div class="kpi-info">
-          <div class="kpi-label">Highest Price</div>
-          <div class="kpi-value" id="kpi-highest">—</div>
-          <div class="kpi-sub" id="kpi-highest-crop">—</div>
+      <div class="kpi">
+        <div class="kpi-ico a">📈</div>
+        <div>
+          <div class="kpi-lbl">Highest Price</div>
+          <div class="kpi-val" id="k-high">—</div>
+          <div class="kpi-sub" id="k-high-lbl">—</div>
         </div>
       </div>
-      <div class="kpi-card">
-        <div class="kpi-icon red">📉</div>
-        <div class="kpi-info">
-          <div class="kpi-label">Lowest Price</div>
-          <div class="kpi-value" id="kpi-lowest">—</div>
-          <div class="kpi-sub" id="kpi-lowest-crop">—</div>
+      <div class="kpi">
+        <div class="kpi-ico r">📉</div>
+        <div>
+          <div class="kpi-lbl">Lowest Price</div>
+          <div class="kpi-val" id="k-low">—</div>
+          <div class="kpi-sub" id="k-low-lbl">—</div>
         </div>
       </div>
     </div>
-    <!-- MAP + GAINERS ROW -->
-    <div class="two-col">
-      <!-- MAP -->
-      <div class="panel">
-        <div class="panel-head">
-          <div>
-            <h3>🗺️ Mandi Price Map</h3>
-            <div class="panel-sub">Click any marker for details</div>
-          </div>
-          <div class="panel-tabs">
-            <button class="ptab active" onclick="switchMapLayer('all',this)">All</button>
-            <button class="ptab" onclick="switchMapLayer('gainers',this)">Gainers</button>
-            <button class="ptab" onclick="switchMapLayer('losers',this)">Losers</button>
+    <!-- MAP + GAINERS/LOSERS -->
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-head">
+          <h3>🗺️ Mandi Price Map</h3>
+          <div class="tabs" id="map-tabs">
+            <button class="tab active" onclick="mapFilter('all',this)">All</button>
+            <button class="tab" onclick="mapFilter('up',this)">Gainers</button>
+            <button class="tab" onclick="mapFilter('dn',this)">Losers</button>
           </div>
         </div>
-        <div id="market-map"></div>
+        <div id="map"></div>
       </div>
-      <!-- GAINERS + LOSERS -->
-      <div style="display:flex;flex-direction:column;gap:20px;">
-        <div class="panel">
-          <div class="panel-head">
+      <div class="col-stack">
+        <div class="card">
+          <div class="card-head">
             <h3>🚀 Top Gainers</h3>
-            <div class="panel-sub">Today vs yesterday</div>
+            <span class="card-sub">vs yesterday</span>
           </div>
-          <div class="panel-body" id="gainers-list">
-            <div class="loading-ring"></div>
-          </div>
+          <div class="card-body" id="gainers"><div class="spinner"></div></div>
         </div>
-        <div class="panel">
-          <div class="panel-head">
+        <div class="card">
+          <div class="card-head">
             <h3>📉 Top Losers</h3>
-            <div class="panel-sub">Today vs yesterday</div>
+            <span class="card-sub">vs yesterday</span>
           </div>
-          <div class="panel-body" id="losers-list">
-            <div class="loading-ring"></div>
-          </div>
+          <div class="card-body" id="losers"><div class="spinner"></div></div>
         </div>
       </div>
     </div>
-    <!-- CHART + TABLE ROW -->
-    <div class="two-col">
-      <!-- CHART -->
-      <div class="panel">
-        <div class="panel-head">
+    <!-- CHART + TABLE -->
+    <div class="grid-2b">
+      <div class="card">
+        <div class="card-head">
           <h3>📊 Price Trends</h3>
-          <div class="panel-tabs" id="chart-tabs">
-            <button class="ptab active" onclick="switchChart('bar',this)">Bar</button>
-            <button class="ptab" onclick="switchChart('line',this)">Line</button>
-            <button class="ptab" onclick="switchChart('pie',this)">Pie</button>
+          <div class="tabs" id="chart-tabs">
+            <button class="tab active" onclick="switchChart('bar',this)">Bar</button>
+            <button class="tab" onclick="switchChart('line',this)">Line</button>
+            <button class="tab" onclick="switchChart('doughnut',this)">Donut</button>
           </div>
         </div>
-        <div class="chart-wrap">
-          <canvas id="main-chart"></canvas>
-        </div>
+        <div class="chart-box"><canvas id="chart"></canvas></div>
       </div>
-      <!-- ALL PRICES TABLE -->
-      <div class="panel">
-        <div class="panel-head">
+      <div class="card">
+        <div class="card-head">
           <h3>🛒 All Prices</h3>
-          <div class="panel-sub" id="table-count">—</div>
+          <span class="card-sub" id="tbl-count">—</span>
         </div>
-        <div style="overflow-y:auto;max-height:296px;">
-          <table class="price-table">
+        <div style="max-height:308px;overflow-y:auto;">
+          <table class="ptable">
             <thead>
-              <tr>
-                <th>Crop</th>
-                <th>Market</th>
-                <th>Price (₹/qt)</th>
-                <th>Change</th>
-              </tr>
+              <tr><th>Crop</th><th>Mandi</th><th>₹/Qt</th><th>Chg</th></tr>
             </thead>
-            <tbody id="price-tbody">
-              <tr><td colspan="4"><div class="loading-ring"></div></td></tr>
-            </tbody>
+            <tbody id="ptbody"><tr><td colspan="4"><div class="spinner"></div></td></tr></tbody>
           </table>
         </div>
       </div>
     </div>
   </main>
   <!-- STATUS BAR -->
-  <footer class="status-bar">
+  <footer class="status">
     <span>📡 AgarLinx</span>
     <span class="sep">|</span>
-    <span>Source: <strong id="st-ref">—</strong></span>
+    <span>Source: <strong id="st-src">—</strong></span>
     <span class="sep">|</span>
-    <span>Updated: <strong id="st-time">—</strong></span>
+    <span>Updated: <strong id="st-ts">—</strong></span>
     <span class="sep">|</span>
-    <span>Records: <strong id="st-count">—</strong></span>
+    <span>Records: <strong id="st-cnt">—</strong></span>
     <span class="sep">|</span>
-    <span id="st-sig" style="font-family:'JetBrains Mono',monospace;font-size:0.65rem;"></span>
+    <span id="st-sig" style="font-family:'JetBrains Mono',monospace;font-size:0.62rem;"></span>
   </footer>
 </div>
-<!-- =========== CROP DETAIL MODAL =========== -->
-<div class="modal-overlay" id="crop-modal" onclick="closeModalOutside(event)">
+<!-- ═══ MODAL ════════════════════════════════════════════════ -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
   <div class="modal">
-    <div class="modal-head">
-      <h2 id="modal-title">Crop Detail</h2>
+    <div class="modal-hd">
+      <h2 id="m-title">Crop Details</h2>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="modal-grid" id="modal-grid"></div>
-      <div class="calc-section">
+    <div class="modal-bd">
+      <div class="m-grid" id="m-grid"></div>
+      <div class="calc">
         <h4>💰 Price Calculator</h4>
         <div class="calc-row">
-          <div class="calc-field">
+          <div class="cf">
             <label>Quantity (Quintal)</label>
-            <input type="number" id="calc-qty" value="10" min="1" oninput="calcValue()"/>
+            <input type="number" id="c-qty" value="10" min="1" oninput="calcVal()"/>
           </div>
-          <div class="calc-field">
+          <div class="cf">
             <label>Unit</label>
-            <select id="calc-unit" onchange="calcValue()">
+            <select id="c-unit" onchange="calcVal()">
               <option value="1">Quintal</option>
-              <option value="100">KG (×100)</option>
-              <option value="0.01">Gram (×0.01)</option>
+              <option value="100">KG (×100 qt)</option>
+              <option value="0.01">Gram</option>
             </select>
           </div>
-          <div class="calc-result" id="calc-result">₹ 0</div>
+          <div class="c-result" id="c-result">₹ 0</div>
         </div>
       </div>
     </div>
   </div>
 </div>
-<!-- =========== SCRIPT =========== -->
+<!-- ═══ SCRIPT ═══════════════════════════════════════════════ -->
 <script>
-/* ===== DECODE ENGINE ===== */
-const _S = "UlavarNamban_AgriData_2026_TN";
-function makeKey(d, h) {
-  return `${_S.slice(0,12)}:${d}:${String(h).padStart(2,'0')}`;
+'use strict';
+/* ─── XOR DECODER ─────────────────────────────────────── */
+const _SECRET = 'UlavarNamban_AgriData_2026_TN';
+function makeKey(date, hour) {
+  return `${_SECRET.slice(0,12)}:${date}:${String(hour).padStart(2,'0')}`;
 }
-function xorB64(b64, key) {
+function xorDecode(b64, key) {
   try {
-    const raw = atob(b64);
-    const kb = new TextEncoder().encode(key);
-    const out = new Uint8Array(raw.length);
-    for (let i = 0; i < raw.length; i++) {
-      out[i] = raw.charCodeAt(i) ^ kb[i % kb.length];
-    }
+    const raw  = atob(b64);
+    const kb   = new TextEncoder().encode(key);
+    const out  = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) out[i] = raw.charCodeAt(i) ^ kb[i % kb.length];
     return new TextDecoder().decode(out);
-  } catch(e) { return null; }
+  } catch { return null; }
 }
-function decodePayload(data) {
-  if (!data || !data.payload) return null;
-  const d = data._d || '';
-  const h = data._h || 0;
-  const key = makeKey(d, h);
-  const decoded = xorB64(data.payload, key);
-  if (!decoded) return null;
-  try { return JSON.parse(decoded); } catch(e) { return null; }
+function decodeFile(obj) {
+  if (!obj?.payload) return null;
+  const key = makeKey(obj._d || '', obj._h ?? 0);
+  const raw = xorDecode(obj.payload, key);
+  if (!raw) return null;
+  try { return JSON.parse(raw); } catch { return null; }
 }
-/* ===== GLOBAL STATE ===== */
-let allData = [];
-let rawMeta = {};
-let map = null;
-let mapMarkers = [];
-let chartInst = null;
-let currentChartType = 'bar';
-let modalCropPrice = 0;
-let notifications = [];
-let notifTimer = null;
-/* ===== MANDI COORDINATES ===== */
-const MANDI_COORDS = {
-  // Tamil Nadu
-  "Chennai":    [13.0827, 80.2707], "Madurai":   [9.9252, 78.1198],
-  "Coimbatore": [11.0168, 76.9558], "Trichy":    [10.7905, 78.7047],
-  "Salem":      [11.6643, 78.1460], "Tirunelveli":[8.7139, 77.7567],
-  "Erode":      [11.3410, 77.7172], "Vellore":   [12.9165, 79.1325],
-  "Thanjavur":  [10.7870, 79.1378], "Tirupur":   [11.1085, 77.3411],
-  "Dindigul":   [10.3673, 77.9803], "Cuddalore": [11.7480, 79.7714],
-  "Kancheepuram":[12.8339, 79.7067],"Nagapattinam":[10.7672, 79.8449],
-  "Krishnagiri":[12.5266, 78.2139], "Dharmapuri":[12.1211, 78.1582],
-  "Tiruvannamalai":[12.2253, 79.0747],"Villupuram":[11.9398, 79.4933],
-  "Puducherry": [11.9416, 79.8083], "Karur":     [10.9601, 78.0766],
-  // Other states
-  "Delhi":      [28.6139, 77.2090], "Mumbai":    [19.0760, 72.8777],
-  "Pune":       [18.5204, 73.8567], "Nashik":    [19.9975, 73.7898],
-  "Kolkata":    [22.5726, 88.3639], "Hyderabad": [17.3850, 78.4867],
-  "Bangalore":  [12.9716, 77.5946], "Mysore":    [12.2958, 76.6394],
-  "Lucknow":    [26.8467, 80.9462], "Varanasi":  [25.3176, 82.9739],
-  "Patna":      [25.5941, 85.1376], "Bhopal":    [23.2599, 77.4126],
-  "Indore":     [22.7196, 75.8577], "Jaipur":    [26.9124, 75.7873],
-  "Ahmedabad":  [23.0225, 72.5714], "Surat":     [21.1702, 72.8311],
-  "Chandigarh": [30.7333, 76.7794], "Amritsar":  [31.6340, 74.8723],
-  "Ludhiana":   [30.9010, 75.8573], "Bhubaneswar":[20.2961, 85.8245],
-  "Nagpur":     [21.1458, 79.0882], "Guwahati":  [26.1445, 91.7362],
-  "Vijayawada": [16.5062, 80.6480], "Visakhapatnam":[17.6868, 83.2185],
-  "Warangal":   [17.9784, 79.5941], "Kurnool":   [15.8281, 78.0373],
-  "Rajkot":     [22.3039, 70.8022], "Vadodara":  [22.3072, 73.1812],
-  "Agra":       [27.1767, 78.0081], "Kanpur":    [26.4499, 80.3319],
-  "Meerut":     [28.9845, 77.7064], "Allahabad": [25.4358, 81.8463],
-  "Jodhpur":    [26.2389, 73.0243], "Udaipur":   [24.5854, 73.7125],
+/* ─── STATE ────────────────────────────────────────────── */
+let DATA    = [];
+let META    = {};
+let leafMap = null;
+let markers = [];
+let chartIns= null;
+let cType   = 'bar';
+let modalPrice = 0;
+let notifs  = [];
+let idx     = [];
+/* ─── KNOWN MANDI COORDINATES ──────────────────────────── */
+const COORDS = {
+  Chennai:[13.0827,80.2707],Madurai:[9.9252,78.1198],Coimbatore:[11.0168,76.9558],
+  Trichy:[10.7905,78.7047],Salem:[11.6643,78.1460],Tirunelveli:[8.7139,77.7567],
+  Erode:[11.3410,77.7172],Vellore:[12.9165,79.1325],Thanjavur:[10.7870,79.1378],
+  Tirupur:[11.1085,77.3411],Dindigul:[10.3673,77.9803],Cuddalore:[11.7480,79.7714],
+  Kancheepuram:[12.8339,79.7067],Nagapattinam:[10.7672,79.8449],Krishnagiri:[12.5266,78.2139],
+  Dharmapuri:[12.1211,78.1582],Tiruvannamalai:[12.2253,79.0747],Villupuram:[11.9398,79.4933],
+  Puducherry:[11.9416,79.8083],Karur:[10.9601,78.0766],
+  Delhi:[28.6139,77.2090],Mumbai:[19.0760,72.8777],Pune:[18.5204,73.8567],
+  Nashik:[19.9975,73.7898],Kolkata:[22.5726,88.3639],Hyderabad:[17.3850,78.4867],
+  Bangalore:[12.9716,77.5946],Mysore:[12.2958,76.6394],Lucknow:[26.8467,80.9462],
+  Varanasi:[25.3176,82.9739],Patna:[25.5941,85.1376],Bhopal:[23.2599,77.4126],
+  Indore:[22.7196,75.8577],Jaipur:[26.9124,75.7873],Ahmedabad:[23.0225,72.5714],
+  Surat:[21.1702,72.8311],Chandigarh:[30.7333,76.7794],Amritsar:[31.6340,74.8723],
+  Ludhiana:[30.9010,75.8573],Nagpur:[21.1458,79.0882],Vijayawada:[16.5062,80.6480],
+  Visakhapatnam:[17.6868,83.2185],Warangal:[17.9784,79.5941],Kurnool:[15.8281,78.0373],
+  Rajkot:[22.3039,70.8022],Agra:[27.1767,78.0081],Kanpur:[26.4499,80.3319],
+  Jodhpur:[26.2389,73.0243],Udaipur:[24.5854,73.7125],Bhubaneswar:[20.2961,85.8245],
+};
+const STATE_CENTERS = {
+  'Tamil Nadu':[11.1,78.6],'Maharashtra':[18.9,75.3],'Karnataka':[13.0,76.5],
+  'Andhra Pradesh':[15.9,79.7],'Telangana':[17.4,79.1],'Rajasthan':[25.2,74.6],
+  'Gujarat':[22.3,71.2],'Uttar Pradesh':[26.9,80.9],'Punjab':[30.7,75.3],
+  'Madhya Pradesh':[22.5,77.4],'West Bengal':[22.9,87.9],'Bihar':[25.1,85.3],
 };
 function getCoords(mandi, state) {
-  if (MANDI_COORDS[mandi]) return MANDI_COORDS[mandi];
-  // Jitter from state capital
-  const stateCaps = {
-    "Tamil Nadu":[11.5, 78.5],"Maharashtra":[18.9, 75.3],
-    "Karnataka":[13.0, 76.5],"Andhra Pradesh":[15.9, 79.7],
-    "Telangana":[17.4, 79.1],"Rajasthan":[25.2, 74.6],
-    "Gujarat":[22.3, 71.2],"Uttar Pradesh":[26.9, 80.9],
-    "Punjab":[30.7, 75.3],"Madhya Pradesh":[22.5, 77.4],
-    "West Bengal":[22.9, 87.9],"Bihar":[25.1, 85.3],
-    "Odisha":[20.5, 84.7],"Assam":[26.2, 92.9],
-    "Haryana":[29.1, 76.1],"Himachal Pradesh":[31.9, 77.1],
-  };
-  const base = stateCaps[state] || [20.5, 78.9];
-  return [base[0] + (Math.random()-0.5)*3, base[1] + (Math.random()-0.5)*3];
+  if (COORDS[mandi]) return COORDS[mandi];
+  const base = STATE_CENTERS[state] || [20.5,78.9];
+  return [base[0]+(Math.random()-.5)*2.5, base[1]+(Math.random()-.5)*2.5];
 }
-/* ===== CROP EMOJIS ===== */
-const CROP_EMOJI = {
-  paddy:       '🌾', rice:        '🍚', wheat:       '🌾',
-  onion:       '🧅', tomato:      '🍅', potato:      '🥔',
-  corn:        '🌽', maize:       '🌽', sugarcane:   '🎋',
-  cotton:      '🌸', groundnut:   '🥜', soybean:     '🫘',
-  mustard:     '🌻', sunflower:   '🌻', coconut:     '🥥',
-  banana:      '🍌', mango:       '🥭', chilli:      '🌶️',
-  garlic:      '🧄', ginger:      '🫚', turmeric:    '🟡',
-  cumin:       '🌿', coriander:   '🌿', pepper:      '🫑',
-  cardamom:    '🌿', coffee:      '☕', tea:         '🍵',
-  rubber:      '🌳', tapioca:     '🫚', drumstick:   '🥢',
-  brinjal:     '🍆', cabbage:     '🥬', cauliflower: '🥦',
-  greens:      '🥬', beans:       '🫘', peas:        '🫛',
-  lemon:       '🍋', orange:      '🍊', apple:       '🍎',
-  pomegranate: '🍎', guava:       '🍐', papaya:      '🍈',
-  watermelon:  '🍉', grapes:      '🍇', jackfruit:   '🍈',
-};
-function cropEmoji(name) {
+/* ─── EMOJI MAP ─────────────────────────────────────────── */
+const EMO = {paddy:'🌾',rice:'🍚',wheat:'🌾',onion:'🧅',tomato:'🍅',potato:'🥔',
+  corn:'🌽',maize:'🌽',sugarcane:'🎋',cotton:'🌸',groundnut:'🥜',soybean:'🫘',
+  mustard:'🌻',sunflower:'🌻',coconut:'🥥',banana:'🍌',mango:'🥭',chilli:'🌶️',
+  garlic:'🧄',ginger:'🫚',turmeric:'🟡',cumin:'🌿',coriander:'🌿',pepper:'🫑',
+  cardamom:'🌿',coffee:'☕',tea:'🍵',rubber:'🌳',tapioca:'🍠',brinjal:'🍆',
+  cabbage:'🥬',cauliflower:'🥦',beans:'🫘',peas:'🫛',lemon:'🍋',orange:'🍊',
+  apple:'🍎',pomegranate:'🍎',guava:'🍐',papaya:'🍈',watermelon:'🍉',grapes:'🍇'};
+function emo(name) {
   const n = name.toLowerCase();
-  for (const [k,v] of Object.entries(CROP_EMOJI)) {
-    if (n.includes(k)) return v;
-  }
+  for (const [k,v] of Object.entries(EMO)) if (n.includes(k)) return v;
   return '🌿';
 }
-/* ===== LOAD DATA ===== */
-async function loadData() {
+/* ─── LOAD ──────────────────────────────────────────────── */
+async function load() {
   try {
     const res = await fetch('prices.json');
     const raw = await res.json();
-    rawMeta = raw;
-    const decoded = decodePayload(raw);
-    if (!decoded) {
-      showError('⚠️ Could not decode prices.json — check that the file is current and the key matches.');
-      return;
+    META = raw;
+    const decoded = decodeFile(raw);
+    if (!decoded) { showErr('Could not decode prices.json — check the key or file freshness.'); return; }
+    // Normalise to array
+    let recs = [];
+    if (Array.isArray(decoded)) recs = decoded;
+    else if (decoded.records) recs = decoded.records;
+    else if (decoded.data)    recs = decoded.data;
+    else {
+      for (const [k,v] of Object.entries(decoded))
+        if (typeof v === 'object' && v) recs.push({crop:k,...v});
     }
-    // Normalise records: handle array or object formats
-    let records = [];
-    if (Array.isArray(decoded)) {
-      records = decoded;
-    } else if (decoded.records) {
-      records = decoded.records;
-    } else if (decoded.data) {
-      records = decoded.data;
-    } else {
-      // Flat map of crop→price
-      for (const [k, v] of Object.entries(decoded)) {
-        if (typeof v === 'object' && v !== null) {
-          records.push({ crop: k, ...v });
-        }
-      }
-    }
-    allData = records.map((r, i) => ({
-      id: i,
-      crop: r.crop || r.name || r.commodity || Object.keys(r)[0] || `Item ${i+1}`,
-      market: r.market || r.mandi || r.location || r.place || '—',
-      state: r.state || r.district || '—',
-      price: parseFloat(r.price || r.modal || r.modal_price || r.Price || r.max || 0),
-      min: parseFloat(r.min || r.min_price || r.price || 0),
-      max: parseFloat(r.max || r.max_price || r.price || 0),
-      prevPrice: parseFloat(r.prev || r.prev_price || 0),
-      variety: r.variety || r.grade || '',
-      unit: r.unit || 'Quintal',
-      arrivals: r.arrivals || r.arrival || 0,
-    })).filter(r => r.price > 0 || r.crop !== '');
-    // Fill in prev price estimate if missing
-    allData = allData.map(r => ({
-      ...r,
-      prevPrice: r.prevPrice > 0 ? r.prevPrice : r.price * (0.92 + Math.random()*0.16),
-    }));
-    renderAll();
-    startNotifEngine();
-    startLiveClock();
+    DATA = recs.map((r,i) => {
+      const price = +( r.price??r.modal??r.modal_price??r.Price??r.max??0 );
+      const prev  = +( r.prev??r.prev_price??0 ) || price*(0.9+Math.random()*.2);
+      return {
+        id:i,
+        crop:   r.crop??r.name??r.commodity??`Item ${i+1}`,
+        market: r.market??r.mandi??r.location??'—',
+        state:  r.state??r.district??'—',
+        price, prev,
+        min:    +( r.min??r.min_price??price ),
+        max:    +( r.max??r.max_price??price ),
+        variety:r.variety??r.grade??'—',
+        unit:   r.unit??'Quintal',
+        arrivals:+( r.arrivals??r.arrival??0 ),
+      };
+    }).filter(r => r.price > 0);
+    render();
+    startNotifs();
+    startClock();
   } catch(e) {
     console.error(e);
-    showError('⚠️ prices.json not found. Place prices.json in the same folder as this HTML file.');
+    showErr('prices.json not found — place it in the same folder as this HTML file.');
   }
 }
-function showError(msg) {
-  document.getElementById('main-content').innerHTML = `
-    <div class="empty-state" style="padding:80px 20px;">
-      <div class="e-icon">📂</div>
+function showErr(msg) {
+  document.getElementById('page').innerHTML = `
+    <div class="empty" style="padding:80px">
+      <div class="ei">📂</div>
       <p style="font-size:1rem;font-weight:700;margin-bottom:8px;">${msg}</p>
-      <p>Make sure <code style="background:var(--bg);padding:2px 8px;border-radius:4px;">prices.json</code> is in the same directory.</p>
+      <p>Make sure <code style="background:var(--input-bg);padding:2px 8px;border-radius:6px">prices.json</code> is in the same directory.</p>
     </div>`;
 }
-/* ===== RENDER ALL ===== */
-function renderAll() {
-  updateMeta();
+/* ─── RENDER ALL ────────────────────────────────────────── */
+function render() {
+  renderMeta();
   renderTicker();
   renderKPIs();
   renderGainersLosers();
   renderTable();
-  renderChart('bar');
+  renderChart(cType);
   initMap();
-  updateSearchIndex();
-  document.getElementById('price-count').textContent = allData.length;
+  buildIdx();
+  document.getElementById('badge-count').textContent = DATA.length;
 }
-function updateMeta() {
-  const ref = rawMeta._ref || 'AgarLinx';
-  const ts = rawMeta._ts || new Date().toISOString();
-  const season = rawMeta._season || '—';
-  const sig = rawMeta._sig ? rawMeta._sig.slice(0,16)+'…' : '';
-  const d = rawMeta._d || '';
-  document.getElementById('sidebar-ref').textContent = ref.split('|').pop().trim();
-  document.getElementById('sidebar-date').textContent = d;
-  document.getElementById('sidebar-season').textContent = `Season: ${season}`;
+function renderMeta() {
+  const ref  = META._ref || 'AgarLinx';
+  const ts   = META._ts  || new Date().toISOString();
+  const sea  = META._season || '—';
+  const d    = META._d   || '';
+  const sig  = META._sig ? META._sig.slice(0,16)+'…' : '';
+  document.getElementById('sb-ref').textContent    = ref.split('|').pop().trim();
+  document.getElementById('sb-date').textContent   = d;
+  document.getElementById('sb-season').textContent = sea;
   document.getElementById('hero-date').textContent = d;
-  document.getElementById('hero-season').innerHTML = `<span>🌿</span><span>${season}</span>`;
-  document.getElementById('hero-sub').textContent = `${ref} • ${allData.length} price records across ${new Set(allData.map(r=>r.market)).size} mandis`;
-  document.getElementById('st-ref').textContent = ref.split('|').pop().trim();
-  document.getElementById('st-time').textContent = new Date(ts).toLocaleString('en-IN');
-  document.getElementById('st-count').textContent = allData.length;
-  document.getElementById('st-sig').textContent = sig ? `sig: ${sig}` : '';
+  document.getElementById('hero-season').innerHTML = `<span>🌿</span><span>${sea}</span>`;
+  document.getElementById('hero-sub').textContent  = `${ref.split('|').pop().trim()} · ${DATA.length} records across ${new Set(DATA.map(r=>r.market)).size} mandis`;
+  document.getElementById('st-src').textContent    = ref.split('|').pop().trim();
+  document.getElementById('st-ts').textContent     = new Date(ts).toLocaleString('en-IN');
+  document.getElementById('st-cnt').textContent    = DATA.length;
+  document.getElementById('st-sig').textContent    = sig ? `sig: ${sig}` : '';
 }
-/* ===== TICKER ===== */
 function renderTicker() {
-  const items = allData.slice(0, 30);
-  const makeItem = (r) => {
-    const chg = r.price - r.prevPrice;
-    const pct = r.prevPrice > 0 ? (chg/r.prevPrice*100).toFixed(1) : '0.0';
-    const dir = chg >= 0 ? 'up' : 'down';
-    const arrow = chg >= 0 ? '▲' : '▼';
-    return `<div class="ticker-item">
-      <span class="t-crop">${cropEmoji(r.crop)} ${r.crop}</span>
+  const N = Math.min(DATA.length, 30);
+  const items = DATA.slice(0, N);
+  const make = r => {
+    const chg = r.price - r.prev;
+    const pct = r.prev>0 ? Math.abs(chg/r.prev*100).toFixed(1) : '0.0';
+    const cls = chg>=0?'t-up':'t-dn';
+    const arr = chg>=0?'▲':'▼';
+    return `<div class="t-item">
+      <span class="t-crop">${emo(r.crop)} ${r.crop}</span>
       <span class="t-price">₹${r.price.toLocaleString('en-IN')}</span>
-      <span class="t-change ${dir}">${arrow}${Math.abs(pct)}%</span>
+      <span class="${cls}">${arr}${pct}%</span>
     </div>`;
   };
-  const html = items.map(makeItem).join('') + items.map(makeItem).join('');
-  document.getElementById('ticker-inner').innerHTML = html;
+  document.getElementById('ticker-inner').innerHTML = items.map(make).join('') + items.map(make).join('');
 }
-/* ===== KPIs ===== */
 function renderKPIs() {
-  const mandis = new Set(allData.map(r=>r.market)).size;
-  const sorted = [...allData].sort((a,b)=>b.price-a.price);
-  const highest = sorted[0];
-  const lowest = sorted[sorted.length-1];
-  document.getElementById('kpi-crops').textContent = allData.length;
-  document.getElementById('kpi-mandis').textContent = mandis;
-  document.getElementById('kpi-highest').textContent = `₹${highest.price.toLocaleString('en-IN')}`;
-  document.getElementById('kpi-highest-crop').innerHTML = `<span class="up">↑ ${cropEmoji(highest.crop)} ${highest.crop}</span>`;
-  document.getElementById('kpi-lowest').textContent = `₹${lowest.price.toLocaleString('en-IN')}`;
-  document.getElementById('kpi-lowest-crop').innerHTML = `<span class="down">↓ ${cropEmoji(lowest.crop)} ${lowest.crop}</span>`;
+  const mandis = new Set(DATA.map(r=>r.market)).size;
+  const s = [...DATA].sort((a,b)=>b.price-a.price);
+  const hi = s[0], lo = s[s.length-1];
+  document.getElementById('k-crops').textContent  = DATA.length;
+  document.getElementById('k-mandis').textContent = mandis;
+  document.getElementById('k-high').textContent   = `₹${hi.price.toLocaleString('en-IN')}`;
+  document.getElementById('k-high-lbl').innerHTML = `<span class="up">↑ ${emo(hi.crop)} ${hi.crop}</span>`;
+  document.getElementById('k-low').textContent    = `₹${lo.price.toLocaleString('en-IN')}`;
+  document.getElementById('k-low-lbl').innerHTML  = `<span class="dn">↓ ${emo(lo.crop)} ${lo.crop}</span>`;
 }
-/* ===== GAINERS / LOSERS ===== */
 function renderGainersLosers() {
-  const withChange = allData.map(r => ({
-    ...r,
-    chgPct: r.prevPrice > 0 ? ((r.price - r.prevPrice)/r.prevPrice*100) : 0
-  })).sort((a,b) => b.chgPct - a.chgPct);
-  const gainers = withChange.slice(0, 5);
-  const losers = withChange.slice(-5).reverse();
-  document.getElementById('gainers-list').innerHTML = renderGLList(gainers, true);
-  document.getElementById('losers-list').innerHTML = renderGLList(losers, false);
+  const ranked = [...DATA].map(r=>({...r,pct:r.prev>0?(r.price-r.prev)/r.prev*100:0}))
+                           .sort((a,b)=>b.pct-a.pct);
+  document.getElementById('gainers').innerHTML = glHTML(ranked.slice(0,5), true);
+  document.getElementById('losers').innerHTML  = glHTML(ranked.slice(-5).reverse(), false);
 }
-function renderGLList(items, isGainer) {
-  return `<div class="gl-list">${items.map(r => {
-    const chg = isGainer ? r.chgPct : Math.abs(r.chgPct);
-    const cls = isGainer ? 'up' : 'down';
-    const arrow = isGainer ? '↑' : '↓';
+function glHTML(list, isUp) {
+  return `<div class="gl-list">${list.map(r=>{
+    const abs = Math.abs(r.pct).toFixed(1);
+    const cls = isUp?'up':'dn', arr = isUp?'↑':'↓';
     return `<div class="gl-item" onclick="openModal(${r.id})">
-      <div class="gl-icon">${cropEmoji(r.crop)}</div>
-      <div class="gl-info">
-        <strong>${r.crop}</strong>
-        <span>${r.market || '—'}</span>
-      </div>
-      <div>
-        <div class="gl-price">₹${r.price.toLocaleString('en-IN')}</div>
-        <div class="gl-change ${cls}">${arrow} ${chg.toFixed(1)}%</div>
+      <div class="gl-em">${emo(r.crop)}</div>
+      <div class="gl-meta"><strong>${r.crop}</strong><span>${r.market}</span></div>
+      <div class="gl-right">
+        <div class="gl-p">₹${r.price.toLocaleString('en-IN')}</div>
+        <div class="gl-c ${cls}">${arr} ${abs}%</div>
       </div>
     </div>`;
   }).join('')}</div>`;
 }
-/* ===== TABLE ===== */
-function renderTable(filter = '') {
-  let rows = allData;
-  if (filter) rows = rows.filter(r => r.crop.toLowerCase().includes(filter) || r.market.toLowerCase().includes(filter));
-  document.getElementById('table-count').textContent = `${rows.length} records`;
-  const html = rows.map(r => {
-    const chg = r.price - r.prevPrice;
-    const pct = r.prevPrice > 0 ? (chg/r.prevPrice*100).toFixed(1) : '0.0';
-    const dir = chg >= 0 ? 'up' : 'down';
-    const arrow = chg >= 0 ? '▲' : '▼';
-    return `<tr onclick="openModal(${r.id})" style="cursor:pointer;">
-      <td><div class="crop-badge"><span class="crop-emoji">${cropEmoji(r.crop)}</span>${r.crop}</div></td>
-      <td style="color:var(--text2);font-size:0.78rem;">${r.market}</td>
-      <td style="font-family:'JetBrains Mono',monospace;font-weight:700;">₹${r.price.toLocaleString('en-IN')}</td>
-      <td><span class="change-chip ${dir}">${arrow} ${Math.abs(pct)}%</span></td>
+function renderTable(filter='') {
+  let rows = filter ? DATA.filter(r=>(r.crop+' '+r.market).toLowerCase().includes(filter)) : DATA;
+  document.getElementById('tbl-count').textContent = `${rows.length} records`;
+  document.getElementById('ptbody').innerHTML = rows.map(r=>{
+    const chg = r.price-r.prev;
+    const pct = r.prev>0?(chg/r.prev*100).toFixed(1):'0.0';
+    const cls = chg>=0?'up':'dn', arr=chg>=0?'▲':'▼';
+    return `<tr onclick="openModal(${r.id})">
+      <td><span class="cbadge">${emo(r.crop)} ${r.crop}</span></td>
+      <td style="color:var(--text-3);font-size:0.75rem">${r.market}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-weight:700">₹${r.price.toLocaleString('en-IN')}</td>
+      <td><span class="chip ${cls}">${arr} ${Math.abs(pct)}%</span></td>
     </tr>`;
-  }).join('');
-  document.getElementById('price-tbody').innerHTML = html || `<tr><td colspan="4"><div class="empty-state"><div class="e-icon">🔍</div><p>No results</p></div></td></tr>`;
+  }).join('') || `<tr><td colspan="4"><div class="empty"><div class="ei">🔍</div><p>No results</p></div></td></tr>`;
 }
-/* ===== CHART ===== */
+/* ─── CHART ─────────────────────────────────────────────── */
 function renderChart(type) {
-  currentChartType = type;
-  const ctx = document.getElementById('main-chart').getContext('2d');
-  if (chartInst) { chartInst.destroy(); chartInst = null; }
-  const top = [...allData].sort((a,b)=>b.price-a.price).slice(0, 12);
-  const labels = top.map(r => r.crop);
-  const prices = top.map(r => r.price);
-  const prev = top.map(r => r.prevPrice);
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  const textColor = isDark ? '#e8f5e9' : '#1a2e1a';
-  const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
-  const palette = [
-    '#2d8b4e','#3aab62','#5dcb7f','#d97706','#1d6fa4',
-    '#c0392b','#8b5cf6','#06b6d4','#f59e0b','#10b981','#ef4444','#3b82f6'
-  ];
-  let config;
-  if (type === 'pie') {
-    config = {
-      type: 'doughnut',
-      data: { labels, datasets:[{ data: prices, backgroundColor: palette, borderWidth: 2, borderColor: isDark?'#172318':'#fff' }] },
-      options: { responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ position:'right', labels:{ color:textColor, font:{size:10}, boxWidth:12 }},
-          tooltip:{ callbacks:{ label: ctx => ` ₹${ctx.parsed.toLocaleString('en-IN')}` }}}}
-    };
-  } else if (type === 'line') {
-    config = {
-      type: 'line',
-      data: { labels, datasets:[
-        { label:'Today ₹/qt', data:prices, borderColor:'#2d8b4e', backgroundColor:'rgba(45,139,78,0.1)', tension:0.4, fill:true, pointRadius:4, pointBackgroundColor:'#2d8b4e' },
-        { label:'Yesterday ₹/qt', data:prev, borderColor:'#d97706', backgroundColor:'rgba(217,119,6,0.1)', tension:0.4, fill:true, pointRadius:4, pointBackgroundColor:'#d97706', borderDash:[4,3] }
-      ]},
-      options: chartOptions(textColor, gridColor)
-    };
-  } else {
-    config = {
-      type: 'bar',
-      data: { labels, datasets:[
-        { label:'Today ₹/qt', data:prices, backgroundColor:'rgba(45,139,78,0.8)', borderRadius:6, borderSkipped:false },
-        { label:'Yesterday ₹/qt', data:prev, backgroundColor:'rgba(217,119,6,0.5)', borderRadius:6, borderSkipped:false }
-      ]},
-      options: chartOptions(textColor, gridColor)
-    };
-  }
-  chartInst = new Chart(ctx, config);
-}
-function chartOptions(textColor, gridColor) {
-  return {
+  cType = type;
+  const ctx = document.getElementById('chart').getContext('2d');
+  if (chartIns) { chartIns.destroy(); chartIns = null; }
+  const top    = [...DATA].sort((a,b)=>b.price-a.price).slice(0,12);
+  const labels = top.map(r=>r.crop);
+  const today  = top.map(r=>r.price);
+  const prev   = top.map(r=>r.prev);
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  const tc = isDark?'#A5C8A7':'#1C2B1C';
+  const gc = isDark?'rgba(255,255,255,0.07)':'rgba(0,0,0,0.07)';
+  const pal = ['#27AE60','#1E8449','#52C87A','#E67E22','#2980B9','#E74C3C','#8E44AD','#16A085','#F39C12','#2C3E50','#D35400','#1ABC9C'];
+  const baseOpts = {
     responsive:true, maintainAspectRatio:false,
-    plugins:{ legend:{ labels:{ color:textColor, font:{size:11} }},
-      tooltip:{ callbacks:{ label: ctx => ` ₹${ctx.parsed.y?.toLocaleString('en-IN') ?? ctx.parsed.toLocaleString('en-IN')}` }}},
+    plugins:{
+      legend:{labels:{color:tc,font:{size:11,family:'Inter'}}},
+      tooltip:{callbacks:{label:c=>` ₹${(c.parsed.y??c.parsed).toLocaleString('en-IN')}`}}
+    },
     scales:{
-      x:{ ticks:{ color:textColor, font:{size:10}, maxRotation:35 }, grid:{ color:gridColor }},
-      y:{ ticks:{ color:textColor, callback: v => '₹'+v.toLocaleString('en-IN') }, grid:{ color:gridColor }}
+      x:{ticks:{color:tc,font:{size:10},maxRotation:35},grid:{color:gc}},
+      y:{ticks:{color:tc,callback:v=>'₹'+v.toLocaleString('en-IN')},grid:{color:gc}}
     }
   };
+  let cfg;
+  if (type==='doughnut') {
+    cfg = {
+      type:'doughnut',
+      data:{labels,datasets:[{data:today,backgroundColor:pal,borderWidth:2,borderColor:isDark?'#1C2820':'#fff'}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'right',labels:{color:tc,font:{size:10},boxWidth:12}},
+        tooltip:{callbacks:{label:c=>` ₹${c.parsed.toLocaleString('en-IN')}`}}}}
+    };
+  } else if (type==='line') {
+    cfg = {
+      type:'line',
+      data:{labels,datasets:[
+        {label:'Today',data:today,borderColor:'#27AE60',backgroundColor:'rgba(39,174,96,0.1)',tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:'#27AE60'},
+        {label:'Yesterday',data:prev,borderColor:'#E67E22',backgroundColor:'rgba(230,126,34,0.1)',tension:0.4,fill:true,pointRadius:4,pointBackgroundColor:'#E67E22',borderDash:[5,3]}
+      ]},
+      options:baseOpts
+    };
+  } else {
+    cfg = {
+      type:'bar',
+      data:{labels,datasets:[
+        {label:'Today ₹/qt',data:today,backgroundColor:'rgba(39,174,96,0.85)',borderRadius:5,borderSkipped:false},
+        {label:'Yesterday ₹/qt',data:prev,backgroundColor:'rgba(230,126,34,0.55)',borderRadius:5,borderSkipped:false}
+      ]},
+      options:baseOpts
+    };
+  }
+  chartIns = new Chart(ctx, cfg);
 }
 function switchChart(type, btn) {
-  document.querySelectorAll('#chart-tabs .ptab').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#chart-tabs .tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   renderChart(type);
 }
-/* ===== MAP ===== */
-let currentMapLayer = 'all';
+/* ─── MAP ───────────────────────────────────────────────── */
+let mapFilter_current = 'all';
 function initMap() {
-  if (map) { map.remove(); map = null; mapMarkers = []; }
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  map = L.map('market-map', { zoomControl:true, scrollWheelZoom:true }).setView([20.5, 78.9], 5);
-  const tileUrl = isDark
+  if (leafMap) { leafMap.remove(); leafMap=null; markers=[]; }
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  leafMap = L.map('map',{zoomControl:true,scrollWheelZoom:true}).setView([20.5,78.9],5);
+  const tile = isDark
     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
     : 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-  L.tileLayer(tileUrl, {
-    attribution:'© OpenStreetMap © CARTO',
-    subdomains:'abcd', maxZoom:18
-  }).addTo(map);
-  addMapMarkers(allData);
+  L.tileLayer(tile,{attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(leafMap);
+  placeMarkers(DATA);
 }
-function addMapMarkers(data) {
-  mapMarkers.forEach(m => m.remove());
-  mapMarkers = [];
-  // Group by market
-  const byMarket = {};
-  data.forEach(r => {
-    if (!byMarket[r.market]) byMarket[r.market] = { records:[], state: r.state };
-    byMarket[r.market].records.push(r);
-  });
-  Object.entries(byMarket).forEach(([market, obj]) => {
-    if (!market || market === '—') return;
-    const coords = getCoords(market, obj.state);
-    const recs = obj.records;
-    const avgPrice = recs.reduce((s,r)=>s+r.price,0) / recs.length;
-    const avgPrev = recs.reduce((s,r)=>s+r.prevPrice,0) / recs.length;
-    const chgPct = avgPrev > 0 ? ((avgPrice-avgPrev)/avgPrev*100).toFixed(1) : '0.0';
-    const isUp = parseFloat(chgPct) >= 0;
-    const color = isUp ? '#2d8b4e' : '#c0392b';
-    const icon = L.divIcon({
-      html: `<div style="width:28px;height:28px;background:${color};border:2px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,0.3);">${isUp?'↑':'↓'}</div>`,
-      className:'', iconSize:[28,28], iconAnchor:[14,14]
+function placeMarkers(data) {
+  markers.forEach(m=>m.remove()); markers=[];
+  const byM = {};
+  data.forEach(r=>{ if(!byM[r.market]) byM[r.market]={recs:[],state:r.state}; byM[r.market].recs.push(r); });
+  Object.entries(byM).forEach(([mkt,obj])=>{
+    if(!mkt||mkt==='—') return;
+    const coords = getCoords(mkt, obj.state);
+    const avg  = obj.recs.reduce((s,r)=>s+r.price,0)/obj.recs.length;
+    const avgP = obj.recs.reduce((s,r)=>s+r.prev,0)/obj.recs.length;
+    const chg  = avgP>0?(avg-avgP)/avgP*100:0;
+    const isUp = chg>=0;
+    const color = isUp?'#27AE60':'#E74C3C';
+    const ico = L.divIcon({
+      html:`<div style="width:30px;height:30px;background:${color};border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:800;box-shadow:0 2px 10px rgba(0,0,0,0.25);">${isUp?'▲':'▼'}</div>`,
+      className:'',iconSize:[30,30],iconAnchor:[15,15]
     });
-    const popupHtml = `
-      <div style="min-width:180px;padding:4px;">
-        <strong style="font-size:0.9rem;display:block;margin-bottom:6px;">🏪 ${market}</strong>
-        <div style="font-size:0.78rem;color:var(--text2);margin-bottom:4px;">${obj.state}</div>
-        <div style="font-size:0.82rem;">Avg: <strong>₹${Math.round(avgPrice).toLocaleString('en-IN')}</strong></div>
-        <div style="font-size:0.75rem;color:${isUp?'var(--green)':'var(--red)'}">
-          ${isUp?'↑':'↓'} ${Math.abs(chgPct)}% vs yesterday
-        </div>
-        <div style="margin-top:8px;font-size:0.72rem;color:var(--text3);">
-          ${recs.slice(0,3).map(r=>`${cropEmoji(r.crop)} ${r.crop} ₹${r.price.toLocaleString('en-IN')}`).join('<br>')}
-          ${recs.length > 3 ? `<br>+ ${recs.length-3} more` : ''}
-        </div>
-      </div>`;
-    const marker = L.marker(coords, {icon}).addTo(map).bindPopup(popupHtml);
-    mapMarkers.push(marker);
+    const pop = `<div style="min-width:190px;padding:4px">
+      <b style="font-size:0.9rem">🏪 ${mkt}</b>
+      <div style="font-size:0.75rem;margin:4px 0 6px;color:var(--text-2)">${obj.state}</div>
+      <div>Avg: <b>₹${Math.round(avg).toLocaleString('en-IN')}</b></div>
+      <div style="color:${color};font-size:0.75rem;font-weight:700">${isUp?'▲':'▼'} ${Math.abs(chg).toFixed(1)}%</div>
+      <div style="margin-top:8px;font-size:0.72rem;line-height:1.7;color:var(--text-3)">
+        ${obj.recs.slice(0,3).map(r=>`${emo(r.crop)} ${r.crop}: ₹${r.price.toLocaleString('en-IN')}`).join('<br>')}
+        ${obj.recs.length>3?`<br>+${obj.recs.length-3} more`:''}
+      </div>
+    </div>`;
+    markers.push(L.marker(coords,{icon:ico}).addTo(leafMap).bindPopup(pop));
   });
 }
-function switchMapLayer(layer, btn) {
-  currentMapLayer = layer;
-  document.querySelectorAll('.panel-tabs .ptab').forEach(b=>b.classList.remove('active'));
+function mapFilter(f, btn) {
+  document.querySelectorAll('#map-tabs .tab').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  let data = allData;
-  if (layer === 'gainers') data = allData.filter(r => r.price >= r.prevPrice);
-  if (layer === 'losers') data = allData.filter(r => r.price < r.prevPrice);
-  addMapMarkers(data);
+  mapFilter_current = f;
+  const d = f==='up' ? DATA.filter(r=>r.price>=r.prev) : f==='dn' ? DATA.filter(r=>r.price<r.prev) : DATA;
+  placeMarkers(d);
 }
-/* ===== MODAL ===== */
+/* ─── MODAL ─────────────────────────────────────────────── */
 function openModal(id) {
-  const r = allData[id];
-  if (!r) return;
-  modalCropPrice = r.price;
-  document.getElementById('modal-title').textContent = `${cropEmoji(r.crop)} ${r.crop}`;
-  const chg = r.price - r.prevPrice;
-  const pct = r.prevPrice > 0 ? (chg/r.prevPrice*100).toFixed(1) : '—';
-  const dir = chg >= 0 ? 'up' : 'down';
-  document.getElementById('modal-grid').innerHTML = `
-    <div class="modal-stat"><label>Market (Mandi)</label><p>${r.market || '—'}</p></div>
-    <div class="modal-stat"><label>State</label><p>${r.state || '—'}</p></div>
-    <div class="modal-stat"><label>Today's Price</label><p>₹${r.price.toLocaleString('en-IN')} / ${r.unit}</p></div>
-    <div class="modal-stat"><label>Yesterday Price</label><p>₹${r.prevPrice.toLocaleString('en-IN')}</p></div>
-    <div class="modal-stat"><label>Change</label><p style="color:var(--${dir === 'up' ? 'green' : 'red'})">${chg >= 0?'▲':'▼'} ₹${Math.abs(chg).toLocaleString('en-IN')} (${Math.abs(pct)}%)</p></div>
-    <div class="modal-stat"><label>Min Price</label><p>₹${r.min.toLocaleString('en-IN')}</p></div>
-    <div class="modal-stat"><label>Max Price</label><p>₹${r.max.toLocaleString('en-IN')}</p></div>
-    <div class="modal-stat"><label>Variety / Grade</label><p>${r.variety || '—'}</p></div>
-  `;
-  document.getElementById('calc-qty').value = 10;
-  calcValue();
-  document.getElementById('crop-modal').classList.add('open');
+  const r = DATA[id]; if(!r) return;
+  modalPrice = r.price;
+  const chg = r.price-r.prev, pct = r.prev>0?(chg/r.prev*100).toFixed(1):'—';
+  const cls = chg>=0?'up':'dn', arr=chg>=0?'▲':'▼';
+  document.getElementById('m-title').textContent = `${emo(r.crop)} ${r.crop}`;
+  document.getElementById('m-grid').innerHTML = `
+    <div class="m-stat"><label>Mandi</label><p>${r.market}</p></div>
+    <div class="m-stat"><label>State</label><p>${r.state}</p></div>
+    <div class="m-stat"><label>Today Price</label><p>₹${r.price.toLocaleString('en-IN')} / ${r.unit}</p></div>
+    <div class="m-stat"><label>Yesterday</label><p>₹${r.prev.toLocaleString('en-IN')}</p></div>
+    <div class="m-stat"><label>Change</label><p style="color:var(--${cls==='up'?'accent':'red'})">${arr} ₹${Math.abs(chg).toLocaleString('en-IN')} (${Math.abs(pct)}%)</p></div>
+    <div class="m-stat"><label>Min</label><p>₹${r.min.toLocaleString('en-IN')}</p></div>
+    <div class="m-stat"><label>Max</label><p>₹${r.max.toLocaleString('en-IN')}</p></div>
+    <div class="m-stat"><label>Variety</label><p>${r.variety||'—'}</p></div>`;
+  document.getElementById('c-qty').value = 10;
+  calcVal();
+  document.getElementById('overlay').classList.add('open');
 }
-function closeModal() { document.getElementById('crop-modal').classList.remove('open'); }
-function closeModalOutside(e) { if (e.target === document.getElementById('crop-modal')) closeModal(); }
-function calcValue() {
-  const qty = parseFloat(document.getElementById('calc-qty').value) || 0;
-  const unit = parseFloat(document.getElementById('calc-unit').value) || 1;
-  const val = modalCropPrice * qty * unit;
-  document.getElementById('calc-result').textContent = `₹ ${val.toLocaleString('en-IN', {maximumFractionDigits:2})}`;
+function closeModal(e) {
+  if (!e || e.target===document.getElementById('overlay'))
+    document.getElementById('overlay').classList.remove('open');
 }
-/* ===== SEARCH ===== */
-let searchIndex = [];
-function updateSearchIndex() {
-  searchIndex = allData.map(r => ({
-    id: r.id,
-    crop: r.crop,
-    market: r.market,
-    price: r.price,
-    text: `${r.crop} ${r.market} ${r.state}`.toLowerCase()
-  }));
+function calcVal() {
+  const q = +document.getElementById('c-qty').value||0;
+  const u = +document.getElementById('c-unit').value||1;
+  document.getElementById('c-result').textContent = `₹ ${(modalPrice*q*u).toLocaleString('en-IN',{maximumFractionDigits:2})}`;
 }
-function onSearchInput(val) {
+/* ─── SEARCH ────────────────────────────────────────────── */
+function buildIdx() {
+  idx = DATA.map(r=>({id:r.id,crop:r.crop,market:r.market,price:r.price,q:(r.crop+' '+r.market+' '+r.state).toLowerCase()}));
+}
+function doSearch(val) {
   const q = val.toLowerCase().trim();
-  const dropdown = document.getElementById('search-dropdown');
-  if (!q) { dropdown.classList.remove('open'); return; }
-  const results = searchIndex.filter(r => r.text.includes(q)).slice(0, 8);
-  if (!results.length) { dropdown.classList.remove('open'); return; }
-  dropdown.innerHTML = results.map(r => `
-    <div class="search-result-item" onmousedown="openModal(${r.id})">
-      <div class="sri-icon">${cropEmoji(r.crop)}</div>
-      <div class="sri-info">
-        <strong>${r.crop}</strong>
-        <span>${r.market}</span>
-      </div>
-      <div class="sri-price">₹${r.price.toLocaleString('en-IN')}</div>
+  const drop = document.getElementById('srch-drop');
+  if(!q){ drop.classList.remove('open'); return; }
+  const res = idx.filter(r=>r.q.includes(q)).slice(0,8);
+  if(!res.length){ drop.classList.remove('open'); return; }
+  drop.innerHTML = res.map(r=>`
+    <div class="sd-item" onmousedown="openModal(${r.id})">
+      <div class="sd-icon">${emo(r.crop)}</div>
+      <div><span class="sd-crop">${r.crop}</span><span class="sd-market">${r.market}</span></div>
+      <div class="sd-price">₹${r.price.toLocaleString('en-IN')}</div>
     </div>`).join('');
-  dropdown.classList.add('open');
+  drop.classList.add('open');
 }
-function onSearchFocus() { onSearchInput(document.getElementById('search-input').value); }
-function onSearchBlur() { setTimeout(()=>document.getElementById('search-dropdown').classList.remove('open'), 200); }
-/* ===== NOTIFICATIONS ===== */
-function startNotifEngine() {
-  generateNotif();
-  notifTimer = setInterval(generateNotif, 12000);
+function closeSearch(){ setTimeout(()=>document.getElementById('srch-drop').classList.remove('open'),200); }
+/* ─── NOTIFICATIONS ─────────────────────────────────────── */
+function startNotifs() {
+  pushNotif();
+  setInterval(pushNotif, 12000);
 }
-function generateNotif() {
-  if (!allData.length) return;
-  const r = allData[Math.floor(Math.random() * allData.length)];
-  const chg = r.price - r.prevPrice;
-  const pct = r.prevPrice > 0 ? Math.abs(chg/r.prevPrice*100).toFixed(1) : '0.0';
-  const isRise = chg >= 0;
-  const notif = {
-    id: Date.now(),
-    type: isRise ? 'rise' : 'fall',
-    emoji: isRise ? '📈' : '📉',
-    title: `${cropEmoji(r.crop)} ${r.crop} ${isRise ? 'surged' : 'dropped'} in ${r.market}`,
-    body: `Price: ₹${r.price.toLocaleString('en-IN')}/qt ${isRise?'▲':'▼'}${pct}% vs yesterday`,
-    time: new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'}),
-    unread: true,
-  };
-  notifications.unshift(notif);
-  if (notifications.length > 20) notifications.pop();
-  renderNotifications();
+function pushNotif() {
+  if(!DATA.length) return;
+  const r = DATA[Math.floor(Math.random()*DATA.length)];
+  const chg = r.price-r.prev;
+  const pct = r.prev>0?Math.abs(chg/r.prev*100).toFixed(1):'0.0';
+  const isUp = chg>=0;
+  notifs.unshift({
+    id:Date.now(), type:isUp?'rise':'fall',
+    icon:isUp?'📈':'📉',
+    title:`${emo(r.crop)} ${r.crop} ${isUp?'surged':'dropped'} in ${r.market}`,
+    body:`Price ₹${r.price.toLocaleString('en-IN')}/qt ${isUp?'▲':'▼'}${pct}% vs yesterday`,
+    time:new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}),
+    unread:true
+  });
+  if(notifs.length>20) notifs.pop();
+  renderNotifs();
 }
-function renderNotifications() {
-  const unread = notifications.filter(n=>n.unread).length;
-  document.getElementById('notif-count').textContent = unread;
-  document.getElementById('notif-list').innerHTML = notifications.map(n => `
-    <div class="notif-item ${n.unread?'unread':''}" data-type="${n.type}" onclick="markRead(${n.id})">
-      <div class="notif-icon ${n.type}">${n.emoji}</div>
-      <div class="notif-body">
+function renderNotifs() {
+  const u = notifs.filter(n=>n.unread).length;
+  document.getElementById('nb-cnt').textContent = u;
+  document.getElementById('np-list').innerHTML = notifs.map(n=>`
+    <div class="np-item ${n.unread?'unread':''} ${n.type}" onclick="readNotif(${n.id})">
+      <div class="np-ico ${n.type}">${n.icon}</div>
+      <div class="np-info">
         <strong>${n.title}</strong>
         <p>${n.body}</p>
         <small>${n.time}</small>
       </div>
     </div>`).join('');
 }
-function markRead(id) {
-  const n = notifications.find(x=>x.id===id);
-  if (n) n.unread = false;
-  renderNotifications();
+function readNotif(id){ const n=notifs.find(x=>x.id===id); if(n) n.unread=false; renderNotifs(); }
+function clearNotif(){ notifs=[]; document.getElementById('nb-cnt').textContent='0'; document.getElementById('np-list').innerHTML=`<div class="empty"><div class="ei">🔔</div><p>No alerts</p></div>`; }
+function toggleNotif(){
+  const p = document.getElementById('notif-panel');
+  p.classList.toggle('open');
+  if(p.classList.contains('open')){ notifs.forEach(n=>n.unread=false); renderNotifs(); }
 }
-function clearNotifs() {
-  notifications = [];
-  document.getElementById('notif-count').textContent = '0';
-  document.getElementById('notif-list').innerHTML = `<div class="empty-state"><div class="e-icon">🔔</div><p>No alerts</p></div>`;
-}
-function toggleNotif() {
-  const panel = document.getElementById('notif-panel');
-  panel.classList.toggle('open');
-  // Mark all as read when opened
-  if (panel.classList.contains('open')) {
-    notifications.forEach(n=>n.unread=false);
-    renderNotifications();
-  }
-}
-/* ===== THEME ===== */
-function toggleTheme() {
+/* ─── THEME ─────────────────────────────────────────────── */
+function toggleTheme(){
   const html = document.documentElement;
-  const isDark = html.getAttribute('data-theme') === 'dark';
-  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-  document.getElementById('theme-btn').textContent = isDark ? '🌙' : '☀️';
-  // Re-render chart and map for correct colors
-  if (allData.length) {
-    renderChart(currentChartType);
-    if (map) { map.remove(); map = null; initMap(); }
-  }
+  const dark = html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme', dark?'light':'dark');
+  document.getElementById('theme-btn').textContent = dark?'🌙':'☀️';
+  if(DATA.length){ renderChart(cType); if(leafMap){leafMap.remove();leafMap=null;initMap();} }
 }
-/* ===== LIVE CLOCK ===== */
-function startLiveClock() {
-  function tick() {
-    const now = new Date();
-    document.getElementById('live-time').textContent = now.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  }
-  tick();
-  setInterval(tick, 1000);
+/* ─── CLOCK ─────────────────────────────────────────────── */
+function startClock(){ setInterval(()=>{document.getElementById('live-clock').textContent=new Date().toLocaleTimeString('en-IN');},1000); }
+/* ─── NAV ───────────────────────────────────────────────── */
+function nav(el, section){
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  if(section==='map') document.getElementById('map').scrollIntoView({behavior:'smooth'});
+  else if(section==='prices') document.getElementById('ptbody').closest('.card').scrollIntoView({behavior:'smooth'});
+  else if(section==='trends') document.getElementById('chart').closest('.card').scrollIntoView({behavior:'smooth'});
+  else if(section==='calculator' && DATA.length) openModal(0);
+  else if(section==='alerts') toggleNotif();
+  else window.scrollTo({top:0,behavior:'smooth'});
 }
-/* ===== NAVIGATION ===== */
-function navigate(section) {
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  event.currentTarget.classList.add('active');
-  if (section === 'map') {
-    document.getElementById('market-map').scrollIntoView({behavior:'smooth'});
-  } else if (section === 'prices') {
-    document.getElementById('price-tbody').closest('.panel').scrollIntoView({behavior:'smooth'});
-  } else if (section === 'calculator') {
-    if (allData.length) openModal(0);
-  } else if (section === 'dashboard') {
-    window.scrollTo({top:0,behavior:'smooth'});
-  } else if (section === 'trends') {
-    document.getElementById('main-chart').closest('.panel').scrollIntoView({behavior:'smooth'});
-  } else if (section === 'alerts') {
-    toggleNotif();
-  }
-}
-/* ===== CLOSE PANELS ON OUTSIDE CLICK ===== */
-document.addEventListener('click', (e) => {
-  const notifPanel = document.getElementById('notif-panel');
-  const notifBtn = document.getElementById('notif-btn');
-  if (!notifPanel.contains(e.target) && !notifBtn.contains(e.target)) {
-    notifPanel.classList.remove('open');
-  }
+/* ─── CLOSE OUTSIDE ─────────────────────────────────────── */
+document.addEventListener('click', e=>{
+  const p=document.getElementById('notif-panel'), b=document.getElementById('notif-btn');
+  if(!p.contains(e.target)&&!b.contains(e.target)) p.classList.remove('open');
 });
-/* ===== BOOT ===== */
-document.addEventListener('DOMContentLoaded', loadData);
+/* ─── BOOT ──────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', load);
 </script>
 </body>
 </html>
